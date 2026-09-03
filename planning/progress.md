@@ -21,6 +21,19 @@
 
 **생성/수정 파일**: 저장소 전체 (첫 커밋)
 
+## Session 2026-09-03 (2)
+
+### Phase 7: paperthin 점검 반영 ✅
+
+**작업 내역**:
+
+1. shower(README·skillmerge) · hate · mandela · ssotize · dedash · detool 실행, 결과는 findings.md
+2. `check/mutations.sh`(변이 5개) · `check/check_spec_sync.py`(규격 가드) 신설, CI에 추가
+3. README(용어표·설치 후 위치·프로필 선택·호출) · mergechk(알려진 한계) · skillmerge(외부 참조 표·스냅샷·문장 통일) · check-criteria(알려진 한계 절) · CLAUDE.md(규격 정본) 수정
+4. readchk에 판단기준없음 갈래(한 갈래로 묶음), `_common.py`에 규격 정본과 `has_criteria`
+
+**생성/수정 파일**: `check/mutations.sh`, `check/check_spec_sync.py` (신규) · `check/_common.py`, `check/readchk.py`, `check/run_check.py`, `README.md`, `CLAUDE.md`, `docs/check-criteria.md`, `skills/breadth/skillmerge/SKILL.md`, `skills/depth/mergechk/SKILL.md`, `.github/workflows/ci.yml`, `planning/*` (수정)
+
 ## Test Results
 
 | Test | Input | Expected | Actual | Status |
@@ -30,6 +43,11 @@
 | similarity.py | examples/before | 회의록요약↔미팅노트정리 합침 후보 | 1.00/1.00/0.41 동일 → 합침 후보 | ✅ |
 | check_contract.py --run-check | examples/after | 🟢 → L1~L4 전체 통과 | 🟢, 47/47 통과 | ✅ |
 | readchk.py | examples/after | 미결 0, DECISIONS.md 변경 없음 | 미결 0 | ✅ |
+| mutations.sh | examples/after 변이 5개 | 🔴 3 · 미결 1 · 알려진 한계 1 | 같음 | ✅ |
+| check_spec_sync.py | templates · CLAUDE.md · docs | 정본과 일치 | 필드 9 · 키 6 · 값 3 일치 | ✅ |
+| check_contract.py --run-check (외부) | Jcurve_SKI team-agent · ax-share-agent | 🟢 전체 통과 | 🟢 전체 통과 | ✅ |
+| check_contract.py --run-check (외부) | Jcurve_SKI report-wording-pack | 원본과 같은 결과 | `data/` 없음 L1 실패 (원본 동일) | ✅ |
+| readchk.py (외부) | team-agent | 오탐 최소 | 판단기준없음 1건(4스킬 묶음) | ⚠️ |
 
 ## Error Log
 
@@ -37,13 +55,15 @@
 | --- | --- | --- | --- |
 | 2026-09-03 | similarity가 체인 인접 쌍을 동명이인으로 분류 | 1 | io를 in/in·out/out 평균으로 |
 | 2026-09-03 | L3 용어 일관에 문장 조각이 표 이름으로 등장 | 1 | TABLE_RE 공백 제거 |
+| 2026-09-03 | has_criteria가 본문의 단어만으로 통과, 이후 절 제목만 인정하니 외부 팩 오탐 5/5 | 2 | 절 제목·→·조건문 인정, 한 갈래로 묶음 |
+| 2026-09-03 | 파이썬 패치 heredoc이 본문 EOF·따옴표에 끊김 (2회) | 2 | 패치를 파일로 써서 실행 |
 
 ## 5-Question Reboot Check
 
 | Question | Answer |
 | --- | --- |
-| 1. 현재 어느 단계인가? | Phase 6 전달 — 첫 PR 열림 |
-| 2. 다음에 할 일은? | 실제 팀 폴더 하나에 `intake`부터 돌려 실측하고, 과잉 합침이 보이면 `skillmerge`를 user-invoked로 전환 검토 |
+| 1. 현재 어느 단계인가? | Phase 7 점검 반영 — PR #1에 두 번째 커밋 |
+| 2. 다음에 할 일은? | 사용자 결정 3개(dedash · planning-with-files · 공통부분 추출) 반영, 그다음 실제 팀 폴더 실측 |
 | 3. 목표는? | tasks.md의 Goal |
 | 4. 지금까지 배운 것? | findings.md의 Learnings |
 | 5. 완료한 작업은? | 위 세션 기록 |

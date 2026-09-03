@@ -39,6 +39,24 @@
 | 계약 블록 | tables · writers · chain(`;`로 경로) · payloads · threshold(±N%) · halt_at(콤마) |
 | 정지 문구 | 본문에 "확인"+"멈" 또는 confirm+halt/stop/pause |
 
+### paperthin 점검 결과 (2026-09-03, 두 번째 세션)
+
+| 반사 | 결과 |
+| --- | --- |
+| shower README | needs work: 용어(팩·L1~L4·확인표·🟢🟡🔴·8절) 미정의, 설치 후 check/ 위치 없음, 프로필 연결 방식 없음 → 용어표·설치 절·"프로필은 선택" 추가 |
+| shower skillmerge | needs work: mergechk·weave·CONTRACT·next·re0 미정의, "판단기준 합집합/하나로/다르면 안 합침" 상충, archive 위치 → 표 8행으로 정의+부재 시 지침, 문장 통일 |
+| hate | 근본 반론: mergechk는 서류 점검이고 증거는 저자가 쓴 예시뿐. 첫 못: 변이 테스트 |
+| 변이 테스트 | 체인 뒤집기·정지 지점 기록·임계값 상충 🔴 / 규칙 전부 삭제 → 미결 / 본문 무의미 → 통과(알려진 한계). `mutations.sh`로 고정 |
+| mandela | Jcurve_SKI 예시 3개(남이 만든 팩)에 엔진 점검기: 2 통과, 1은 원본과 같은 `data/` 실패. similarity: 5스킬 팩 합침 후보 0(정답), paperthin 28스킬 0(입출력 frontmatter 없으면 못 봄) |
+| ssotize | 팩 규격이 엔진 12곳·프로필 10곳에 재진술. `check_spec_sync.py`가 정본(`_common.py`)과 대조 |
+| dedash | em-dash 95개(문서 46·코드 주석 49). user-invoked라 미적용, 결정 대기 |
+| detool | README의 도구 이름은 설치 런북 성격. 유지 |
+| 외부 린터 skillscheck | 사분면 중첩 레이아웃을 스킬로 오인(에러 3), 한국어 설명을 "when 없음"으로 경고. 도입 보류 |
+
+### 도입 후보 판정
+
+도입: H1 합치기 전 스냅샷(Hermes rollback) · H3 규격 드리프트 가드(paperthin check-catalog-sync). 보류: H2 공통부분 추출(분류 의미 변경이라 사용자 결정) · H4 planning-with-files(파일명 고정·공존 불가) · H5 사용량 신호(런타임 카운터 없음) · H6 skillscheck · H8 상류 어댑터(프로필 몫). 불가: H7 SkillOpt(실행 궤적 전제).
+
 ## Technical Decisions
 
 | Decision | Rationale |
@@ -64,6 +82,14 @@
 
 **해결**: 공백 제거. 언더스코어·하이픈 변형만 표기 변형으로 본다.
 
+### 4. 판단기준 탐지의 오탐
+
+**문제**: 절 제목만 인정하니 규칙을 불릿으로만 적은 외부 팩(team-agent)에서 5/5가 미결.
+
+**해결**: 예외 절·"→" 줄·조건문(…이면 …한다) 인정, 스킬별 갈래를 한 갈래로 묶음. 4/5 → 1건.
+
+**결과**: 미결이라 막지 않는다. 남은 오탐은 "## 판단기준" 제목 하나로 해소된다고 메시지에 적었다.
+
 ## Resources
 
 - 철학·규약 원문: https://github.com/LilMGenius/paperthin (README, CLAUDE.md, docs/invocation.md)
@@ -72,6 +98,10 @@
 - 점검 기준: `docs/check-criteria.md`
 
 ## Learnings
+
+### (2026-09-03) 점검기의 한계를 CI에 적어 두면 "검증"이라는 말이 정직해진다
+
+변이 테스트 없이는 "전체 통과"가 무엇을 뜻하는지 아무도 모른다. 잡는 것 3개와 못 잡는 것 2개를 `mutations.sh`에 고정하니, README가 "검증한다" 대신 "구조·계약을 판정하고 동작은 사람이 확인한다"고 정확히 말할 수 있게 됐다. 한계가 줄어들면 그 스크립트가 실패해서 문서를 고치게 만든다.
 
 ### (2026-09-03) 엔진과 인스턴스는 규격으로 이어진다
 

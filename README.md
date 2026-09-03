@@ -1,6 +1,6 @@
 # skillmergeagent — 흩어진 스킬을 하나의 워크플로우로
 
-**팀원들이 각자 만든 스킬을 파악하고, 워크플로우를 인터뷰로 확정하고, 비슷한 것은 통폐합하고, 합쳐지지 않는 것은 하나의 워크플로우로 엮어, 처음부터 끝까지 위임되는지 검증한다.**
+**팀원들이 각자 만든 스킬을 파악하고, 워크플로우를 인터뷰로 확정하고, 비슷한 것은 통폐합하고, 합쳐지지 않는 것은 하나의 워크플로우로 엮는다. 그 결과의 구조와 이름 계약은 기계가 판정하고, 실제로 도는지는 사람이 두 번 확인한다.**
 
 어느 회사, 어느 팀, 어느 에이전트(Claude Code, Codex, OpenCode, Cursor 등)에서든 같은 방식으로 쓴다. 회사 고유의 것(디자인 토큰, 교육 세션 이름, 상류 도구의 파일 형식)은 이 저장소에 두지 않는다. 그런 것은 이 엔진을 쓰는 **프로필 저장소**(예: [Jcurve_SKI](https://github.com/gbrinan/Jcurve_SKI))에 둔다.
 
@@ -18,7 +18,25 @@ npx skills@latest add gbrinan/skillmergeagent --global --agent '*'
 이 폴더의 스킬들을 하나의 팀 에이전트로 묶고 싶어.
 ```
 
-`intake`가 먼저 읽고 제안하며, 빈 칸은 `askflow`가 묻고, 비슷한 것은 `skillmerge`가, 나머지는 `weave`가, 검증은 `mergechk`가 맡는다. 진행 상황은 `planfiles`가 `planning/` 세 파일에 남긴다.
+`intake`가 먼저 읽고 제안하며, 빈 칸은 `askflow`가 묻고, 비슷한 것은 `skillmerge`가, 나머지는 `weave`가, 구조·계약 판정은 `mergechk`가 맡는다. 진행 상황은 `planfiles`가 `planning/` 세 파일에 남긴다. 에이전트가 알아서 순서대로 부르지만, 사용자가 `/skillmerge`처럼 이름으로 한 단계만 부를 수도 있다.
+
+**설치 뒤 무엇이 어디에 있나.** 위 명령은 여섯 스킬(SKILL.md)만 에이전트의 스킬 폴더에 넣는다. `check/`의 점검 스크립트와 `templates/`는 이 저장소에 있다. 스크립트를 쓰려면 `git clone https://github.com/gbrinan/skillmergeagent`로 받아 `python3 check/…`를 돌린다(표준 라이브러리만 쓴다). 스크립트 없이도 스킬은 돌아간다: `mergechk`가 [`docs/check-criteria.md`](docs/check-criteria.md)의 항목을 손으로 수행한다.
+
+**프로필 저장소는 선택이다.** 엔진은 프로필을 읽지 않는다. 회사 고유의 프롬프트·상류 어댑터·디자인 토큰이 필요한 팀이 그것을 따로 두고 사람이 쓰는 것뿐이다. 없으면 이 저장소만으로 끝까지 간다.
+
+## 용어
+
+| 용어 | 뜻 |
+| --- | --- |
+| **팩** | 통폐합과 엮기의 산출물 폴더 하나(`팀-agent/`). 점검 도구의 `<팩>` 인자가 이것이다 |
+| **스킬 카드** | 스킬 하나를 이름·담당·입력·출력·읽는 표·쓰는 표·다음·사람 여부·판단기준·예외·출처로 정규화한 한 줄. 서식은 `templates/skill-card.md` |
+| **확인표 A·B·C** | `intake`가 파일에서 채워 "이대로 맞습니까?" 한 번에 확인받는 표. A 스킬 구성, B 판단기준·예외, C 실행 순서 |
+| **기획서 8절** | `agent-plan.md`. 팀과 목적 · 역할 · 데이터 명세 · 시나리오 · 결과 반영 · 연동 맵 · 정지 지점 · 폴더 트리. 에이전트 정보의 원본(SSOT) |
+| **계약** | `CONTRACT.md`의 `contract` 블록. 표 이름 · 표당 기록자 · 체인 · 페이로드 · 임계값 · 정지 지점의 정본 철자 |
+| **게이트 🟢🟡🔴** | 계약 대조 결과. 🟢 준수, 🟡 표기만 어긋남(치환안 제시 후 재검사), 🔴 팀 결정 필요(자동 교정 없음). 🟢일 때만 L1~L4로 간다 |
+| **L1~L4** | 기계 판정 네 층. L1 구조 · L2 맥락 반영 · L3 충돌·일관성 · L4 처음부터 끝까지. 기준은 `docs/check-criteria.md` |
+| **사람 판정 2개** | 기계가 못 보는 것. 실제 환경에서 시나리오 한 번 돌리기, 틀린 입력을 넣어 멈추는지 보기 |
+| **DECISIONS.md** | `mergechk`가 남기는 "이해한 바"와 "아직 정해지지 않은 것". 팀이 `결정됨`을 적으면 다시 덮어쓰지 않는다 |
 
 ## 지도
 
@@ -55,7 +73,7 @@ paperthin의 사분면(개수 × 시간)을 그대로 쓴다. 이 저장소에 `
 | --- | --- | --- | --- | --- |
 | 🗂️ **[planfiles](./skills/coil/planfiles/SKILL.md)** | tasks·findings·progress 세 파일을 영구 메모리로 쓴다 | 프로젝트 하나 | model | |
 
-모두 model-invoked다. 어느 것도 파일을 지우지 않고, 변경이 있는 스킬(`skillmerge`)은 계획을 보고하고 승인을 받은 뒤에만 바꾼다.
+호출 열의 "model"은 에이전트가 스스로 부른다는 뜻이고, 사용자도 이름으로 부를 수 있다. 어느 것도 파일을 지우지 않고, 변경이 있는 스킬(`skillmerge`)은 계획을 보고하고 승인을 받은 뒤에만 바꾼다.
 
 ## 전체 흐름
 
@@ -70,7 +88,7 @@ paperthin의 사분면(개수 × 시간)을 그대로 쓴다. 이 저장소에 `
       │
       ├─ weave       남은 스킬을 맥락 군집 → outputs↔inputs로 체인 → 갈림길·halt_at → 커버리지 표(빠진 스킬 0)
       │
-      └─ mergechk    readchk → DECISIONS.md · 계약 게이트 🟢🟡🔴 → L1~L4 · 사람 판정 2개(실제 실행·오류 주입)
+      └─ mergechk    readchk → DECISIONS.md · 계약 게이트 🟢🟡🔴 → L1~L4(구조·계약) · 사람 판정 2개(실제 실행·오류 주입)
 
 내내: planfiles  planning/tasks.md(계획) · findings.md(발견·결정) · progress.md(세션 기록·오류)
 ```
@@ -118,10 +136,12 @@ python3 check/similarity.py <폴더> [<폴더>...]        # 통폐합·체인 �
 python3 check/readchk.py <팩>                          # 읽은 바 + 미결 → DECISIONS.md
 python3 check/check_contract.py <팩> --run-check       # 계약 게이트 → 통과 시 L1~L4 점검
 python3 check/run_check.py --self                      # 이 저장소 자신: README 구조도 ↔ 실제 폴더
+bash check/mutations.sh                                # 변이 회귀: 점검기가 무엇을 잡고 무엇을 못 잡는지 고정
+python3 check/check_spec_sync.py                       # 팩 규격이 templates·CLAUDE.md·docs에서 어긋나지 않았는지
 bash scripts/validate-skills.sh                        # 스킬 카탈로그 규약
 ```
 
-기준과 판정 철학은 [`docs/check-criteria.md`](docs/check-criteria.md).
+기준과 판정 철학, 그리고 **알려진 한계**(기계는 본문의 의미를 못 본다)는 [`docs/check-criteria.md`](docs/check-criteria.md).
 
 ## 문제와 해법
 
@@ -133,7 +153,7 @@ bash scripts/validate-skills.sh                        # 스킬 카탈로그 규
 - `askflow`는 파일이 이미 답한 것을 다시 묻지 않는다. 인터뷰가 줄어든다.
 - `skillmerge`는 스킬 수를 줄인다. 합칠 것이 없으면 아무것도 바꾸지 않는다.
 - `weave`는 스킬을 더 만들지 않고 순서와 정지만 더한다.
-- `mergechk`는 통과시키기 위해서가 아니라 탈락시키기 위해 있다.
+- `mergechk`는 통과시키기 위해서가 아니라 탈락시키기 위해 있다. 무엇을 못 잡는지도 적어 둔다.
 - `planfiles`는 대화 기억 대신 파일 세 개만 믿는다.
 
 > 어려운 것은 기능을 더하는 게 아니라 절제다. 고칠 것이 없는 한 판은 아무것도 바꾸지 않는다. 그 절제가 제품이다.

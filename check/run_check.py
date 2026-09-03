@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _common import TABLE_RE, find_skills, has_halt, human_of, next_of, parse_contract, parse_skill
+from _common import SKILL_REQUIRED, TABLE_RE, find_skills, has_halt, human_of, next_of, parse_contract, parse_skill
 
 results = []
 
@@ -56,7 +56,7 @@ def main(pack_dir):
         meta, body = parse_skill(p)
         check("L1", f"{p.parent.name}: frontmatter", meta is not None)
         if meta:
-            missing = [k for k in ["name", "inputs", "outputs", "reads", "writes", "next"] if k not in meta]
+            missing = [k for k in SKILL_REQUIRED if k not in meta]
             check("L1", f"{meta.get('name', p.parent.name)}: 헤더 필드 완비", not missing,
                   f"누락: {missing}" if missing else "")
             skills[meta.get("name", p.parent.name)] = (meta, body, p)

@@ -16,15 +16,16 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _common import find_skills, halt_list, has_halt, human_of, next_of, parse_contract, parse_skill
+from _common import find_skills, halt_list, has_criteria, has_halt, human_of, next_of, parse_contract, parse_skill
 
 STAKES = {  # 갈래의 무게 — 숫자가 작을수록 먼저 정해야 한다
     "검수없음": (1, "사람 확인 없이 결과가 나간다"),
     "기록자충돌": (2, "같은 표에 둘이 써서 데이터가 덮인다"),
     "임계값상충": (3, "같은 규칙이 문서마다 다른 값이다"),
     "중간정지누락": (4, "중간 사람 판단이 halt_at에 없다"),
-    "데이터미정": (5, "표·칸 이름이 아직 없다"),
-    "연동미정": (6, "다른 스킬과의 연결이 미정이다"),
+    "판단기준없음": (5, "규칙이 없으면 사람이 매번 정해야 한다 (변이 테스트로 확인된 점검기의 사각지대)"),
+    "데이터미정": (6, "표·칸 이름이 아직 없다"),
+    "연동미정": (7, "다른 스킬과의 연결이 미정이다"),
 }
 
 
@@ -100,6 +101,14 @@ def main(pack_dir):
         if len(ws) > 1:
             forks.append(("기록자충돌", t, f"「{t}」에 {ws}가 함께 기록합니다. 표당 기록자는 하나여야 합니다.",
                           ["기록자를 한 스킬로 정하고 나머지는 읽기만 한다", "두 스킬을 하나로 합친다(skillmerge)"]))
+    no_rule = [n for n, (m, body) in skills.items()  # ③-1 판단기준이 적혀 있는가 (자동·증강 스킬만). 한 갈래로 묶는다
+               if human_of(m) in ("자동", "증강", "") and not has_criteria(body)]
+    if no_rule:
+        forks.append(("판단기준없음", ", ".join(no_rule),
+                      f"{len(no_rule)}개 스킬({', '.join(no_rule)})에 판단기준(조건 → 결과)이 절 제목이나 문장으로 적혀 있지 않습니다. "
+                      "계약 게이트와 점검기는 이름과 구조만 보므로 이 빈칸을 잡지 못합니다. 규칙이 불릿으로만 있다면 '## 판단기준' 제목 하나를 붙이면 됩니다.",
+                      ["본문에 '## 판단기준' 절을 두고 조건 → 결과로 적는다",
+                       "규칙이 정말 없는 단순 변환이면 '판단기준: 없음(단순 변환)'이라고 적는다"]))
     if "(미정)" in plan and "데이터 명세" in plan:  # ④ 표·칸이 정해졌는가
         forks.append(("데이터미정", "데이터 명세", "표 이름과 칸 이름이 아직 없습니다. 인터뷰에서 채워야 합니다.",
                       ["팀이 실제로 쓰는 엑셀/시트 이름부터 받아 채운다", "실습용 가상 값으로 채우고 실도입 전 교체한다"]))

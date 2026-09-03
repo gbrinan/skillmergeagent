@@ -6,7 +6,7 @@
 
 ## Current Phase
 
-✅ Phase 6: 전달 (첫 PR)
+✅ Phase 7: paperthin 점검 반영 (PR #1 두 번째 커밋)
 
 ## Phases
 
@@ -43,6 +43,16 @@
 
 - [x] main 시드 + 기능 브랜치 push, PR
 
+### Phase 7: paperthin 점검 반영 ✅
+
+- [x] shower(README·skillmerge 냉독, 별도 세션) · hate(근본 반론 + 첫 못) · mandela(남이 만든 팩으로 독립 검증) · ssotize(규격 재진술 12곳) · dedash(em-dash 95개) · detool
+- [x] hate의 첫 못 = 변이 테스트 5개 → 3개 잡음, 2개 못 잡음. `check/mutations.sh`로 CI에 고정
+- [x] README·mergechk: "검증" → "구조·계약 판정 + 사람 판정 2개", 알려진 한계 명시
+- [x] README 용어표 9개 · 설치 후 위치 · 프로필은 선택 · 호출 방식
+- [x] skillmerge: 외부 참조 8개의 뜻과 "없으면" 지침, 판단기준 문장 통일, 스냅샷 단계(H1), archive 위치
+- [x] readchk: 판단기준없음 갈래(한 갈래로 묶음) · `check_spec_sync.py`(H3) · CI 2단계 추가
+- [ ] 사용자 결정 대기: em-dash 제거(dedash), planning-with-files 전환, 공통부분 추출(H2)
+
 ## Key Questions
 
 1. `skillmerge`를 model-invoked로 두는 것이 과잉 합침을 부르는가? → 실측 후 판단. 지금은 승인 게이트로 막는다.
@@ -58,6 +68,10 @@
 | check/ 스크립트를 Jcurve_SKI에서 복사해 일반화 | 링크로 공유하면 두 저장소 다 자기완결이 깨진다. 규격(계약 블록·frontmatter)은 호환 유지 |
 | similarity는 입력끼리·출력끼리 따로 잰다 | 합쳐 재면 A의 출력이 B의 입력인 체인 쌍이 "같은 일"로 보였다 (실측) |
 | 표 이름 정규식에서 공백 제거 | "이번 주 회의록이 회의록목록.csv" 같은 문장 조각이 표 이름으로 잡혔다 (실측) |
+| 기계 판정을 "검증"이라 부르지 않는다 | 변이 테스트: 본문을 "아무것도 하지 않는다"로 바꿔도 통과. 기계는 구조·계약만 본다 |
+| 판단기준 없음은 실패가 아니라 미결(readchk) | 규칙이 불릿으로만 있는 외부 팩(team-agent)에서 4/5 오탐. 막지 않고 보이게 두고 한 갈래로 묶었다 |
+| 합치기 전 스냅샷(커밋 또는 archive/_snapshot) | Hermes Curator의 rollback에서 가져옴. 되돌릴 수 없으면 합치지 않는다 |
+| 규격 정본은 `_common.py`, 복사본은 `check_spec_sync.py`가 지킨다 | paperthin check-catalog-sync와 같은 자리. 자기완결 복사를 링크로 바꾸지 않는다 |
 
 ## Errors Encountered
 
@@ -65,6 +79,9 @@
 | --- | --- | --- |
 | similarity가 액션아이템추출↔안건정리를 "동명이인"으로 분류 | 1 | io 축을 in/in · out/out 평균으로 변경 → 인접(체인)으로 정정 |
 | L3 용어 일관 검사에 문장 조각이 표 이름으로 등장 | 1 | TABLE_RE에서 공백 허용 제거 |
+| has_criteria가 본문의 '판단기준' 단어만으로 통과 (M4 미검출) | 1 | 절 제목·→ 줄·조건문만 인정 |
+| 절 제목만 인정하니 외부 팩에서 5/5 오탐 | 2 | 예외 절·조건문 인정 + 한 갈래로 묶음 → 1건 |
+| 파이썬 패치 heredoc이 본문의 EOF·따옴표에 끊김 | 2 | 패치 스크립트를 파일로 써서 실행 |
 
 ## Notes
 

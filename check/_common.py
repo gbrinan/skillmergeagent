@@ -6,6 +6,12 @@ from pathlib import Path
 TABLE_EXT = r"(?:xlsx|xls|docx|pptx|pdf|csv|json)"
 TABLE_RE = re.compile(r"[\w가-힣]+(?:[_\-][\w가-힣]+)*\." + TABLE_EXT)  # 공백은 이름의 일부로 보지 않는다
 
+# 팩 규격의 정본. templates/·CLAUDE.md·docs/check-criteria.md는 이 목록을 재진술하며, check_spec_sync.py가 어긋남을 잡는다.
+SKILL_FIELDS = ["name", "owner", "quadrant", "human", "inputs", "outputs", "reads", "writes", "next"]
+SKILL_REQUIRED = ["name", "inputs", "outputs", "reads", "writes", "next"]
+CONTRACT_KEYS = ["tables", "writers", "chain", "payloads", "threshold", "halt_at"]
+HUMAN_VALUES = ["자동", "증강", "사람고유"]
+
 HUMAN_MAP = {"자동": "자동", "auto": "자동", "증강": "증강", "augment": "증강",
              "사람고유": "사람고유", "human": "사람고유"}
 
@@ -94,6 +100,15 @@ def parse_contract(path):
             else:
                 c["writers"][k.strip()] = v.strip()
     return c
+
+
+def has_criteria(body):
+    """본문에 판단기준이 적혀 있는가. '판단기준' 절, 또는 조건→결과 꼴의 규칙 문장."""
+    # 인정하는 것: 판단기준·예외·Rules 절 제목, "조건 → 결과" 줄, 조건문 꼴의 문장. 본문에 단어 '판단기준'만 있는 것은 아니다.
+    heading = re.search(r"^#+\s*(판단\s*기준|예외|Rules|Decision criteria)", body, re.M | re.I)
+    arrow = re.search(r"^\s*[-*\d.]*\s*[^\n]*→", body, re.M)
+    cond = re.search(r"(이면|하면|되면|경우|초과|미만|이상|넘[게으])[^\n]*(한다|로 |으로|분리|제외|정지|멈|보고|표시)", body)
+    return bool(heading or arrow or cond)
 
 
 def halt_list(c):

@@ -23,3 +23,7 @@ jobs:
         run: python3 check/check_contract.py examples/after --run-check
       - name: readchk leaves no undecided fork (after)
         run: python3 check/readchk.py examples/after && git diff --exit-code -- examples/after/DECISIONS.md
+      - name: Mutation regression (what the checker catches, and its known limit)
+        run: bash check/mutations.sh
+      - name: Pack-spec drift guard
+        run: python3 check/check_spec_sync.py

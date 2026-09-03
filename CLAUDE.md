@@ -68,14 +68,14 @@ user-invoked로 둘 후보가 있었다면 `skillmerge`다. 통폐합 반사가 
 - **스킬 frontmatter** (`templates/skill-card.md`): `name` · `owner` · `quadrant` · `human`(자동·증강·사람고유) · `inputs` · `outputs` · `reads` · `writes` · `next`. 사람고유 스킬은 본문에 "확인"과 "멈"(또는 confirm·halt)이 든 절을 둔다.
 - **계약 블록** (`templates/CONTRACT.md`): `tables` · `writers`(표당 하나) · `chain`(갈림길은 `;`) · `payloads` · `threshold`(±N%) · `halt_at`(중간 포함).
 
-규격을 바꾸면 `check/_common.py`, `templates/`, `docs/check-criteria.md`, 그리고 `examples/after/`를 함께 바꾼다. CI가 예시 팩으로 회귀를 잡는다.
+규격의 정본은 `check/_common.py`의 `SKILL_FIELDS` · `CONTRACT_KEYS` · `HUMAN_VALUES`다. 규격을 바꾸면 거기서 시작해 `templates/`, 이 문서, `docs/check-criteria.md`, `examples/after/`를 따라 바꾼다. `check/check_spec_sync.py`가 복사본의 어긋남을, `check/mutations.sh`가 점검기의 한계 변화를 CI에서 잡는다.
 
 ## 출하 전 확인
 
 1. **SKILL.md**가 위 서식을 따른다. `name`이 폴더와 같다.
 2. **README** 색인에 사분면·호출·읽기 전용 열과 링크가 있고, **plugin.json**에 경로가 등록돼 있다. `scripts/validate-skills.sh`가 둘 다 확인한다.
 3. **README 구조도**가 실재하는 최상위 폴더를 전부 안내한다. `python3 check/run_check.py --self`.
-4. **예시가 통과한다.** `python3 check/similarity.py examples/before`가 합침 후보를 내고, `python3 check/check_contract.py examples/after --run-check`가 0으로 끝나고, `readchk.py examples/after`가 `DECISIONS.md`를 바꾸지 않는다.
+4. **예시가 통과한다.** `python3 check/similarity.py examples/before`가 합침 후보를 내고, `python3 check/check_contract.py examples/after --run-check`가 0으로 끝나고, `readchk.py examples/after`가 `DECISIONS.md`를 바꾸지 않는다. `bash check/mutations.sh`와 `python3 check/check_spec_sync.py`도 통과한다.
 5. **회사 고유 명사가 없다.** `skills/`·`templates/`·`check/`·`docs/`에 회사 이름·세션 번호·브랜드 색이 없다.
 6. **package.json** 버전은 크기가 아니라 종류로 올린다: 기존 동작이 틀렸으면 patch, 맞지만 좁았으면 minor, 대체 없는 제거는 major.
 7. **planning/**에 이번 세션의 발견·결정·오류가 들어갔다.

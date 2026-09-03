@@ -1,0 +1,25 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate the skill catalog
+        run: bash scripts/validate-skills.sh
+      - name: README structure matches folders
+        run: python3 check/run_check.py --self
+      - name: Similarity audit flags the duplicate pair (before)
+        run: python3 check/similarity.py examples/before | tee /tmp/sim.txt && grep -q "합침 후보" /tmp/sim.txt
+      - name: Contract gate and integration check pass (after)
+        run: python3 check/check_contract.py examples/after --run-check
+      - name: readchk leaves no undecided fork (after)
+        run: python3 check/readchk.py examples/after && git diff --exit-code -- examples/after/DECISIONS.md

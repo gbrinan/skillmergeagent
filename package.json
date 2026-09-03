@@ -1,0 +1,8 @@
+{
+  "name": "skillmergeagent",
+  "version": "0.1.0",
+  "description": "흩어진 스킬을 파악하고, 워크플로우를 인터뷰하고, 비슷한 것은 통폐합하고, 나머지는 하나의 워크플로우로 엮는 에이전트 — 어느 회사, 어느 에이전트에서든.",
+  "keywords": ["agent-skills", "skills", "skill-merge", "workflow", "consolidation", "ssot", "planning-with-files", "agent-agnostic", "paperthin"],
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/gbrinan/skillmergeagent.git" }
+}

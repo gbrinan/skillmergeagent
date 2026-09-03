@@ -26,7 +26,7 @@
 - 회사 고유: 교육 세션 번호, 이노허브/Codex, SK CI 토큰(DESIGN.md), 상류 도구(ATF·WFDATA) 형식과 어댑터, 페르소나. → 그 저장소에 남긴다.
 - 페르소나 인터뷰가 드러낸 이탈 지점: 확인 요청이 "완성 초안 전문"이라 비용이 크다 · 예외 처리가 사람에게 그대로 떨어진다. 부족 스킬은 새 표 없이 채웠다(제거 우선).
 
-### ahastudio — File-based Planning Workflow
+### ahastudio: File-based Planning Workflow
 
 - 세 파일: tasks.md(계획·추적, 단계 시작 시) · findings.md(발견·결정, 조사 직후) · progress.md(세션 기록, 날짜 오름차순, 5문항 재부팅).
 - Spec-driven(무엇을, top-down)과 짝: 여기서는 `agent-plan.md`가 spec, 세 파일이 과정.
@@ -54,6 +54,10 @@
 | 외부 린터 skillscheck | 사분면 중첩 레이아웃을 스킬로 오인(에러 3), 한국어 설명을 "when 없음"으로 경고. 도입 보류 |
 
 두 번째 냉독(수정 후, 별도 세션): README와 skillmerge 모두 **needs work → minor gaps**. 남은 걸림(작업 디렉터리·`planning/` 위치·표와 확인표 구분·`halt_at`·v0·5문항·`askflow`·`re0`·동일 판정에 판단기준 포함·손 대조의 🟢 정의)은 세 번째 커밋에서 인라인 정의로 해소.
+
+### 2번 결정: planning-with-files (2026-09-03)
+
+선택지는 셋이었다. (A) 전환: 파일명이 `task_plan.md`로 고정이고 설정 불가, 문서가 다른 스킬과의 공존을 다루지 않으며 훅은 특정 호스트 플러그인 설치에서만 전부 붙는다. (B) 이름만 맞추기: 같은 파일을 두 스킬이 쓰게 되어 덮어쓰기 위험이 커진다. (C) 유지 + 물러나기: `planfiles`가 `task_plan.md`를 보면 그 파일을 쓰고 `planning/`을 만들지 않는다. C를 골랐다. 스킬을 더하지 않고 규칙 한 줄로 충돌을 없앤다.
 
 ### 도입 후보 판정
 

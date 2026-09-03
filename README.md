@@ -1,4 +1,4 @@
-# skillmergeagent — 흩어진 스킬을 하나의 워크플로우로
+# skillmergeagent: 흩어진 스킬을 하나의 워크플로우로
 
 **팀원들이 각자 만든 스킬을 파악하고, 워크플로우를 인터뷰로 확정하고, 비슷한 것은 통폐합하고, 합쳐지지 않는 것은 하나의 워크플로우로 엮는다. 그 결과의 구조와 이름 계약은 기계가 판정하고, 실제로 도는지는 사람이 두 번 확인한다.**
 
@@ -97,14 +97,14 @@ npx skills@latest add gbrinan/skillmergeagent --global --agent '*'
 
 각 단계는 앞 단계의 산출물을 그대로 입력으로 받는다. 기획서 하나가 끝까지 따라간다. 정해지지 않은 것이 있어도 멈추지 않는다. `mergechk`가 미결을 `DECISIONS.md`에 적고 가장 무거운 것 하나만 앞세운다.
 
-## 산출물 — 끝나면 손에 남는 것
+## 산출물: 끝나면 손에 남는 것
 
 팀 폴더 하나다. 실제 예시는 [`examples/after/`](examples/after/).
 
 ```text
 팀-agent/
 ├── README.md          사용법 3줄 + 기획서 링크          (처음 여는 사람)
-├── agent-plan.md      기획서 8절 — 이것이 원본(SSOT)    (사람 + 점검기)
+├── agent-plan.md      기획서 8절, 이것이 원본(SSOT)    (사람 + 점검기)
 ├── AGENTS.md          역할 · 입출력 · 도구 · 트리거      (사람)
 ├── CONTRACT.md        표 · 기록자 · 순서 · 정지 지점     (점검기가 읽음)
 ├── DECISIONS.md       이해한 바 + 아직 안 정해진 것      (나중에 감사하는 사람)
@@ -119,7 +119,7 @@ npx skills@latest add gbrinan/skillmergeagent --global --agent '*'
 | `CONTRACT.md` | 계약 게이트가 🔴로 멈추고 채울 서식을 알려줌 |
 | `DECISIONS.md` | 없어도 됨. `readchk.py`가 만들어 줌 |
 
-## 파일 기반 계획 — 세 파일이 기억이다
+## 파일 기반 계획: 세 파일이 기억이다
 
 컨텍스트가 리셋되면 에이전트는 작업을 잊고, 긴 작업 중에 목표를 잃고, 실패한 시도를 반복한다. 그래서 과정은 `planning/` 아래 세 파일에 산다.
 
@@ -129,7 +129,7 @@ npx skills@latest add gbrinan/skillmergeagent --global --agent '*'
 | **findings.md** | 인벤토리 · 데이터 명세 · 기술 결정 · 만난 문제 | 발견 직후 즉시 |
 | **progress.md** | 세션별 작업 내역 · 테스트 결과 · 오류 로그 · 5문항 재부팅(현재 단계 · 다음 할 일 · 목표 · 배운 것 · 완료한 것, 새 세션이 여기서 시작한다) | 세션마다 |
 
-서식은 [`templates/`](templates/)에, 이 저장소 자신의 기록은 [`planning/`](planning/)에 있다. 기획서(`agent-plan.md`)가 "무엇을" 만들지의 원본이라면 세 파일은 "어떻게 진행됐는지"의 기록이다.
+서식은 [`templates/`](templates/)에, 이 저장소 자신의 기록은 [`planning/`](planning/)에 있다. 이미 [planning-with-files](https://github.com/OthmanAdi/planning-with-files) 같은 파일 기반 계획 스킬을 쓰는 팀은 그대로 두면 된다. `planfiles`는 그쪽 파일(`task_plan.md` 등)이 있으면 그것을 쓰고 `planning/`을 만들지 않는다. 두 스킬이 같은 파일을 따로 쓰는 일은 없다. 기획서(`agent-plan.md`)가 "무엇을" 만들지의 원본이라면 세 파일은 "어떻게 진행됐는지"의 기록이다.
 
 ## 점검 도구
 
@@ -179,6 +179,6 @@ skillmergeagent/
 
 ## 출처
 
-- 철학과 스킬 해부: [paperthin](https://github.com/LilMGenius/paperthin) (MIT) — `readchk`·`aim`·`ssotize`·`sip`의 반사를 이 도메인으로 옮겼다. 포크가 아니라 같은 규약을 따르는 별도 스위트다.
-- 과정 기록: [ahastudio/til — File-based Planning Workflow](https://github.com/ahastudio/til/blob/main/ai/file-based-planning-workflow.md) — 세 파일 패턴을 `planfiles`와 `templates/`로 옮겼다.
-- 첫 인스턴스: [Jcurve_SKI](https://github.com/gbrinan/Jcurve_SKI) — 한 회사의 에이전트 제작 교육에서 실측으로 다듬어진 인터뷰 프롬프트·계약 게이트·점검기가 이 엔진의 원형이다. 회사 고유 부분은 그 저장소에 남고, 일반화된 부분이 여기로 왔다.
+- 철학과 스킬 해부: [paperthin](https://github.com/LilMGenius/paperthin) (MIT): `readchk`·`aim`·`ssotize`·`sip`의 반사를 이 도메인으로 옮겼다. 포크가 아니라 같은 규약을 따르는 별도 스위트다.
+- 과정 기록: [ahastudio/til, File-based Planning Workflow](https://github.com/ahastudio/til/blob/main/ai/file-based-planning-workflow.md): 세 파일 패턴을 `planfiles`와 `templates/`로 옮겼다.
+- 첫 인스턴스: [Jcurve_SKI](https://github.com/gbrinan/Jcurve_SKI): 한 회사의 에이전트 제작 교육에서 실측으로 다듬어진 인터뷰 프롬프트·계약 게이트·점검기가 이 엔진의 원형이다. 회사 고유 부분은 그 저장소에 남고, 일반화된 부분이 여기로 왔다.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""계약 준수 게이트 — 각자 만들어 온 스킬을 통합 점검 전에 거른다.
+"""계약 준수 게이트: 각자 만들어 온 스킬을 통합 점검 전에 거른다.
 
 사용: python3 check/check_contract.py <팩 경로> [--run-check]
 
@@ -8,7 +8,7 @@
   1 = 🟡 YELLOW 이름 표기 어긋남. 교정안을 REMEDIATION.md로 쓴다 (기계가 제안, 사람이 반영).
   2 = 🔴 RED    팀 결정이 필요한 충돌. 결정 요청 목록을 출력한다. 자동 교정하지 않는다.
 
-RED가 하나라도 있으면 YELLOW 교정안을 만들지 않는다 — 이름부터 고쳐도 소용없기 때문(제거 우선).
+RED가 하나라도 있으면 YELLOW 교정안을 만들지 않는다. 이름부터 고쳐도 소용없기 때문이다(제거 우선).
 """
 import re
 import subprocess
@@ -40,7 +40,7 @@ def main(pack_dir, run_harness=False):
     for p in find_skills(pack):
         meta, body = parse_skill(p)
         if meta is None:
-            finding(RED, p.parent.name, "frontmatter 없음 — 계약 대조 불가")
+            finding(RED, p.parent.name, "frontmatter 없음. 계약 대조 불가")
             continue
         skills[meta.get("name", p.parent.name)] = (meta, body, p)
     if not skills:
@@ -60,12 +60,12 @@ def main(pack_dir, run_harness=False):
                     finding(YELLOW, name, f"{field}의 표 이름이 계약과 표기가 다름: {t}",
                             (str(path), t, t_canon[norm(t)]))
                 else:
-                    finding(RED, name, f"{field}에 계약에 없는 표: {t} — 팀이 계약에 추가할지 결정 필요")
+                    finding(RED, name, f"{field}에 계약에 없는 표: {t}. 팀이 계약에 추가할지 결정 필요")
         for t in set(TABLE_RE.findall(body)):
             if t not in c["tables"] and norm(t) in t_canon:
                 finding(YELLOW, name, f"본문의 표 이름 표기가 다름: {t}", (str(path), t, t_canon[norm(t)]))
 
-    # 2. 단일 기록자 (정규화해서 비교 — 표기 차이에 가려진 충돌을 잡는다)
+    # 2. 단일 기록자 (정규화해서 비교한다. 표기 차이에 가려진 충돌을 잡는다)
     writers = {}
     for name, (meta, _, _) in skills.items():
         for t in meta.get("writes") or []:
@@ -74,10 +74,10 @@ def main(pack_dir, run_harness=False):
         canon = t_canon.get(nt, nt)
         declared = c["writers"].get(canon)
         if len(ws) > 1:
-            finding(RED, canon, f"기록자가 {len(ws)}명: {ws} — 계약상 기록자는 "
+            finding(RED, canon, f"기록자가 {len(ws)}명: {ws}. 계약상 기록자는 "
                                 f"{declared or '미지정'}. 팀이 한 명으로 정해야 함")
         elif declared and ws[0] != declared:
-            finding(RED, canon, f"계약상 기록자는 {declared}인데 {ws[0]}가 씀 — 담당 재확인 필요")
+            finding(RED, canon, f"계약상 기록자는 {declared}인데 {ws[0]}가 씀. 담당 재확인 필요")
 
     # 3. 페이로드 이름 대조
     for name, (meta, _, path) in skills.items():
@@ -88,7 +88,7 @@ def main(pack_dir, run_harness=False):
                 if norm(v) in p_canon:
                     finding(YELLOW, name, f"{field}의 이름 표기가 다름: {v}", (str(path), v, p_canon[norm(v)]))
                 else:
-                    finding(RED, name, f"{field}에 계약에 없는 이름: {v} — 팀이 페이로드를 정의해야 함")
+                    finding(RED, name, f"{field}에 계약에 없는 이름: {v}. 팀이 페이로드를 정의해야 함")
 
     # 4. 흐름 (직선·갈림길 모두 허용)
     edges, nodes_in_chain = set(), set()
@@ -96,9 +96,9 @@ def main(pack_dir, run_harness=False):
         nodes_in_chain.update(path)
         edges.update(zip(path, path[1:]))
     for s in [s for s in skills if s not in nodes_in_chain]:
-        finding(RED, s, "계약 흐름에 없는 스킬 — 어디에 넣을지 팀이 결정 필요")
+        finding(RED, s, "계약 흐름에 없는 스킬. 어디에 넣을지 팀이 결정 필요")
     for s in [s for s in nodes_in_chain if s not in skills]:
-        finding(RED, s, "계약에 있으나 제출되지 않은 스킬 — 담당자 확인 필요")
+        finding(RED, s, "계약에 있으나 제출되지 않은 스킬. 담당자 확인 필요")
     for a, b in edges:
         if a in skills and b in skills:
             actual = next_of(skills[a][0])
@@ -115,8 +115,8 @@ def main(pack_dir, run_harness=False):
             nums = set(re.findall(r"(\d+)\s*%", body))
             wrong = nums - {want}
             if wrong:
-                finding(RED, name, f"임계값이 계약({c['threshold']})과 다름: {sorted(wrong)}% "
-                                   f"— 어느 값이 맞는지 팀이 정해야 함")
+                finding(RED, name, f"임계값이 계약({c['threshold']})과 다름: {sorted(wrong)}%. "
+                                   f"어느 값이 맞는지 팀이 정해야 함")
             elif nums and not re.search(r"±\s*" + want, body):
                 finding(YELLOW, name, f"임계값 표기가 계약 형식(±{want}%)과 다름")
 
@@ -125,9 +125,9 @@ def main(pack_dir, run_harness=False):
         if h in skills:
             meta, body, _ = skills[h]
             if meta.get("writes"):
-                finding(RED, h, f"정지 지점인데 표에 기록함: {meta['writes']} — 자동 발송 위험")
+                finding(RED, h, f"정지 지점인데 표에 기록함: {meta['writes']}. 자동 발송 위험")
             if not has_halt(body):
-                finding(RED, h, "정지 지점인데 본문에 확인 요청·정지 문구가 없음 — "
+                finding(RED, h, "정지 지점인데 본문에 확인 요청·정지 문구가 없음. "
                                 "체인 중간 지점이면 점검기 L4가 못 보는 자리이므로 여기서 반드시 잡는다")
         else:
             finding(RED, h, "halt_at에 있으나 제출되지 않은 스킬")
@@ -145,12 +145,12 @@ def main(pack_dir, run_harness=False):
         for _, item, desc, _ in yellows:
             print(f"  - [{item}] {desc}")
     if not reds and not yellows:
-        print("🟢 계약 준수 — 위반 없음")
+        print("🟢 계약 준수. 위반 없음")
 
     print("\n" + "=" * 55)
     if reds:
         code = RED
-        print(f"🔴 RED — 팀이 {len(reds)}건을 결정한 뒤 재검사하세요. 자동 교정하지 않습니다.")
+        print(f"🔴 RED. 팀이 {len(reds)}건을 결정한 뒤 재검사하세요. 자동 교정하지 않습니다.")
         print("     (이름부터 고쳐도 소용없으므로 YELLOW 교정안도 만들지 않습니다)")
     elif yellows:
         code = YELLOW
@@ -161,10 +161,10 @@ def main(pack_dir, run_harness=False):
             if fix:
                 lines.append(f"  - `{fix[0]}`: `{fix[1]}` → `{fix[2]}`")
         rem.write_text("\n".join(lines) + "\n", encoding="utf-8")
-        print(f"🟡 YELLOW — 교정안을 {rem}에 썼습니다. 반영 후 재검사하세요.")
+        print(f"🟡 YELLOW. 교정안을 {rem}에 썼습니다. 반영 후 재검사하세요.")
     else:
         code = GREEN
-        print("🟢 GREEN — 계약 준수. 통합 점검기로 진행합니다.")
+        print("🟢 GREEN. 계약 준수. 통합 점검기로 진행합니다.")
 
     if run_harness:
         if code == GREEN:

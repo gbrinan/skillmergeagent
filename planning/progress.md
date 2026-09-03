@@ -48,6 +48,7 @@
 | check_contract.py --run-check (외부) | Jcurve_SKI team-agent · ax-share-agent | 🟢 전체 통과 | 🟢 전체 통과 | ✅ |
 | check_contract.py --run-check (외부) | Jcurve_SKI report-wording-pack | 원본과 같은 결과 | `data/` 없음 L1 실패 (원본 동일) | ✅ |
 | readchk.py (외부) | team-agent | 오탐 최소 | 판단기준없음 1건(4스킬 묶음) | ⚠️ |
+| dedash | 저장소 전체(.git 제외) | em-dash 0개, 검사 전부 통과 | 95 → 0, 전부 통과 | ✅ |
 
 ## Error Log
 
@@ -62,7 +63,7 @@
 
 | Question | Answer |
 | --- | --- |
-| 1. 현재 어느 단계인가? | Phase 7 점검 반영 — PR #1에 두 번째 커밋 |
+| 1. 현재 어느 단계인가? | Phase 7 점검 반영, PR #1에 두 번째 커밋 |
 | 2. 다음에 할 일은? | 사용자 결정 3개(dedash · planning-with-files · 공통부분 추출) 반영, 그다음 실제 팀 폴더 실측 |
 | 3. 목표는? | tasks.md의 Goal |
 | 4. 지금까지 배운 것? | findings.md의 Learnings |

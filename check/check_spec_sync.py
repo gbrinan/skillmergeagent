@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""규격 드리프트 가드 — 팩 규격(스킬 frontmatter 필드·계약 키·사람 여부 값)은 자기완결 원칙 때문에
+"""규격 드리프트 가드: 팩 규격(스킬 frontmatter 필드·계약 키·사람 여부 값)은 자기완결 원칙 때문에
 templates/·CLAUDE.md·docs/check-criteria.md에 재진술된다. 정본은 check/_common.py다. 어긋나면 여기서 실패한다.
 paperthin의 check-catalog-sync와 같은 자리다: 하나의 집이 다른 곳을 먹이는 대신, CI가 복사본을 지킨다.
 """

@@ -34,9 +34,9 @@ description: "<트리거가 풍부한 한 줄>"
 <한 줄: 이 스킬이 하는 일>
 
 ## Goal
-## Workflow      — 번호 붙은 단계
-## Rules         — 제약
-## Verification  — 끝내기 전 확인. 무엇이 바뀌었는지 보고
+## Workflow      (번호 붙은 단계)
+## Rules         (제약)
+## Verification  (끝내기 전 확인. 무엇이 바뀌었는지 보고)
 ```
 
 본문은 한국어, 절 제목은 영어로 둔다. 검증 스크립트와 다른 에이전트가 같은 뼈대를 인식하도록.
@@ -51,11 +51,11 @@ user-invoked로 둘 후보가 있었다면 `skillmerge`다. 통폐합 반사가 
 
 스킬은 자기완결이다. 아래는 스킬 사이 관계가 곧 스킬인, 의도된 예외다.
 
-- **파이프라인** — `intake` → `askflow` → `skillmerge` → `weave` → `mergechk`. 각자 앞 단계의 산출물을 입력으로 받지만, 앞 단계가 없으면 스스로 만든다(`askflow`는 인벤토리가 없으면 `intake`를 먼저 돈다).
-- **점검기 오케스트레이션** — `mergechk`는 `check/`의 스크립트를 순서대로 부른다(`readchk.py` → `check_contract.py --run-check`). 스크립트가 없는 환경에서는 `docs/check-criteria.md`를 손으로 돈다.
-- **planning 기록** — 다섯 스킬 모두 끝에 "`planning/`이 있으면 …에 적는다(`planfiles`)" 한 줄을 갖는다. `planfiles`는 그 세 파일의 규칙을 정하는 유일한 집이다.
-- **편집 안전** — 바꿀 대상이 있는지 확인하고 없으면 MISS로 보고, 유니코드 안전(`PYTHONUTF8=1`), 한 건씩 치환: `skillmerge`에 인라인. 파일을 바꾸는 스킬이 늘면 같은 문구를 복사한다.
-- **삭제 대신 보관** — `skillmerge`의 폐기는 `archive/`로 옮긴다. `autobahn`의 negatives-as-corpus와 같은 규칙이다.
+- **파이프라인**: `intake` → `askflow` → `skillmerge` → `weave` → `mergechk`. 각자 앞 단계의 산출물을 입력으로 받지만, 앞 단계가 없으면 스스로 만든다(`askflow`는 인벤토리가 없으면 `intake`를 먼저 돈다).
+- **점검기 오케스트레이션**: `mergechk`는 `check/`의 스크립트를 순서대로 부른다(`readchk.py` → `check_contract.py --run-check`). 스크립트가 없는 환경에서는 `docs/check-criteria.md`를 손으로 돈다.
+- **planning 기록**: 다섯 스킬 모두 끝에 "`planning/`이 있으면 …에 적는다(`planfiles`)" 한 줄을 갖는다. `planfiles`는 그 세 파일의 규칙을 정하는 유일한 집이다.
+- **편집 안전**: 바꿀 대상이 있는지 확인하고 없으면 MISS로 보고, 유니코드 안전(`PYTHONUTF8=1`), 한 건씩 치환: `skillmerge`에 인라인. 파일을 바꾸는 스킬이 늘면 같은 문구를 복사한다.
+- **삭제 대신 보관**: `skillmerge`의 폐기는 `archive/`로 옮긴다. `autobahn`의 negatives-as-corpus와 같은 규칙이다.
 
 ## 파일 기반 계획 (이 저장소에서 작업할 때)
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""통합 점검기 — 기계 판정 (L1~L3 + L4 일부).
+"""통합 점검기: 기계 판정 (L1~L3 + L4 일부).
 
 사용:
   python3 check/run_check.py <팩 경로>   팀 에이전트 팩을 판정
@@ -66,7 +66,7 @@ def main(pack_dir):
     agent_md = (pack / "AGENTS.md").read_text(encoding="utf-8") if (pack / "AGENTS.md").is_file() else ""
     contract = parse_contract(pack / "CONTRACT.md") or {"tables": {}}
 
-    # L2 맥락 반영 — 명세 안의 표 = 기획서에 적힌 표 + 계약 tables(확장자 없는 이름도 여기로)
+    # L2 맥락 반영: 명세 안의 표 = 기획서에 적힌 표 + 계약 tables(확장자 없는 이름도 여기로)
     plan_tables = set(TABLE_RE.findall(plan)) | set(contract["tables"])
     for name, (meta, body, p) in skills.items():
         check("L2", f"{name}: 기획서에 언급", name in plan or name in agent_md,
@@ -124,7 +124,7 @@ def main(pack_dir):
             check("L3", f"흐름 정합: {a}→{b}", bool(out & inp),
                   f"outputs {sorted(out)} ↛ inputs {sorted(inp)}" if not out & inp else "")
 
-    # 산출물 유형 — 탈락 사유가 아니라 이름 붙이기. AI 태스크 수(다단계성)와 갈림길 유무(순서 가변성)를 본다.
+    # 산출물 유형: 탈락 사유가 아니라 이름 붙이기. AI 태스크 수(다단계성)와 갈림길 유무(순서 가변성)를 본다.
     branching = any(len(v) > 1 for v in nexts.values())
     humans = {n: human_of(m) for n, (m, _, _) in skills.items()}
     ai_tasks = [n for n, h in humans.items() if h in ("자동", "증강")]
@@ -132,7 +132,7 @@ def main(pack_dir):
     known_human = any(humans.values())
     too_few = known_human and len(ai_tasks) < 3
     if too_few:
-        pack_kind = f"팀 스킬팩 (AI 태스크 {len(ai_tasks)}개 — 다단계성 기준선 3개 미충족)"
+        pack_kind = f"팀 스킬팩 (AI 태스크 {len(ai_tasks)}개, 다단계성 기준선 3개 미충족)"
         kind_note = [f"  · AI에 맡길 태스크(자동·증강)가 {len(ai_tasks)}개입니다. 에이전트가 대신할 일 자체가 적습니다.",
                      "    태스크를 더 쪼개 3개 이상으로 만들거나, 이대로 스킬 묶음으로 씁니다."]
     elif branching:
@@ -140,7 +140,7 @@ def main(pack_dir):
     else:
         pack_kind = "팀 스킬팩 (순차 실행)"
         kind_note = ["  · 순서가 매번 같은 흐름입니다. 지금 만든 것은 스킬 묶음이고,",
-                     "    갈림길이 생기는 순간 그대로 에이전트가 됩니다 — 부품은 이미 다 만들었습니다."]
+                     "    갈림길이 생기는 순간 그대로 에이전트가 됩니다. 부품은 이미 다 만들었습니다."]
 
     terminals = [n for n in skills if not nexts.get(n)]
     mid_human = [n for n in human_only if n not in terminals]
@@ -184,7 +184,7 @@ def main(pack_dir):
                 dtext = dfile.read_text(encoding="utf-8") if dfile.is_file() else ""
                 acknowledged = "결정됨" in dtext and t in dtext and ("검수" in plan or "검수" in agent_md)
                 check("L4", f"{tag}: 휴먼인더루프 명시", None if acknowledged else False,
-                      "검수 지점 없음 — 팀이 위험으로 수용하고 DECISIONS.md에 기록함" if acknowledged else
+                      "검수 지점 없음. 팀이 위험으로 수용하고 DECISIONS.md에 기록함" if acknowledged else
                       "본문에 확인 요청·정지가 없음 (수용하려면 DECISIONS.md에 결정을 기록하십시오)")
 
     fails = [r for r in results if r[2] is False]
@@ -194,11 +194,11 @@ def main(pack_dir):
         print(f"\n[{layer}] {sum(1 for r in rows if r[2])}/{len(rows)} 통과")
         for _, name, ok, detail in rows:
             mark = "✅" if ok is True else ("⚠️" if ok is None else "❌")
-            print(f"  {mark} {name}" + (f" — {detail}" if detail and ok is not True else ""))
+            print(f"  {mark} {name}" + (f" ({detail})" if detail and ok is not True else ""))
     print(f"\n{'=' * 50}")
     verdict = "전체 통과 ✅" if not fails else f"실패 {len(fails)}건 ❌"
     if accepted and not fails:
-        verdict += f" (수용된 위험 {len(accepted)}건 ⚠️ — 사라지지 않습니다)"
+        verdict += f" (수용된 위험 {len(accepted)}건 ⚠️, 사라지지 않습니다)"
     print(f"기계 판정: {verdict}")
     print(f"산출물 유형: {pack_kind}")
     for line in kind_note:
@@ -226,7 +226,7 @@ def self_check(repo_dir):
     check("SELF", "README가 모든 최상위 폴더를 안내", not missing, f"구조도에 없는 폴더: {missing}" if missing else "")
     rows = [r for r in results if r[0] == "SELF"]
     for _, name, ok, detail in rows:
-        print(f"  {'✅' if ok else '❌'} {name}" + (f" — {detail}" if detail and not ok else ""))
+        print(f"  {'✅' if ok else '❌'} {name}" + (f" ({detail})" if detail and not ok else ""))
     fails = [r for r in rows if not r[2]]
     print(f"저장소 자기 판정: {'통과 ✅' if not fails else f'실패 {len(fails)}건 ❌'}")
     return 1 if fails else 0

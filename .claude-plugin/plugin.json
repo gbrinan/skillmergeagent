@@ -1,6 +1,6 @@
 {
   "name": "skillmergeagent",
-  "description": "흩어진 스킬을 파악하고, 워크플로우를 인터뷰하고, 비슷한 것은 통폐합하고, 나머지는 하나의 워크플로우로 엮는 에이전트 — 어느 회사, 어느 에이전트에서든.",
+  "description": "흩어진 스킬을 파악하고, 워크플로우를 인터뷰하고, 비슷한 것은 통폐합하고, 나머지는 하나의 워크플로우로 엮는 에이전트. 어느 회사, 어느 에이전트에서든.",
   "skills": [
     "./skills/depth/intake",
     "./skills/depth/askflow",

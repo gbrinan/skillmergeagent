@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""유사 스킬 감사 — 통폐합(skillmerge)과 체인(weave)의 후보를 기계적으로 뽑는다.
+"""유사 스킬 감사: 통폐합(skillmerge)과 체인(weave)의 후보를 기계적으로 뽑는다.
 
 사용: python3 check/similarity.py <폴더> [<폴더> ...] [--min 0.4] [--all]
 
@@ -7,7 +7,7 @@
   io     입력·출력 이름 겹침 (Jaccard, 표기 정규화)
   table  읽고 쓰는 표 겹침
   text   판단기준·본문 키워드 겹침 (한국어 2글자 이상 어절 + 영단어)
-그리고 분류를 제안한다 — 동일(합침) · 포함(흡수) · 동명이인(합치지 않음, 갈림길) · 인접(체인) · 무관.
+그리고 분류를 제안한다: 동일(합침) · 포함(흡수) · 동명이인(합치지 않음, 갈림길) · 인접(체인) · 무관.
 분류는 제안이지 판정이 아니다. 합칠지는 팀이 정하고, 합침은 승인 뒤에만 한다.
 """
 import re
@@ -96,7 +96,7 @@ def main(argv):
     show_all = "--all" in argv
     skills = load(dirs or ["."])
     if len(skills) < 2:
-        print("스킬이 2개 미만 — 대조할 쌍이 없습니다")
+        print("스킬이 2개 미만이라 대조할 쌍이 없습니다")
         return 0
     rows = []
     for i in range(len(skills)):
@@ -115,7 +115,7 @@ def main(argv):
     if merges:
         print(f"→ 합침·흡수 후보 {len(merges)}쌍. 계획을 보고하고 승인 뒤에만 합칩니다(skillmerge).")
     else:
-        print("→ 합침 후보 없음. 빈 결과는 유효합니다 — 통폐합을 정당화하려고 유사도를 부풀리지 않습니다.")
+        print("→ 합침 후보 없음. 빈 결과는 유효합니다. 통폐합을 정당화하려고 유사도를 부풀리지 않습니다.")
     return 0
 
 

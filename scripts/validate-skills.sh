@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 스킬 카탈로그 검증 — CLAUDE.md의 규약대로 출하 가능한가. ci.yml과 로컬에서 같은 것을 돌린다.
+# 스킬 카탈로그 검증: CLAUDE.md의 규약대로 출하 가능한가. ci.yml과 로컬에서 같은 것을 돌린다.
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
@@ -19,7 +19,7 @@ while IFS= read -r f; do
   [ "$name" = "$(basename "$d")" ]                   || err "$f: name '$name' != directory '$(basename "$d")'"
   grep -qF "\"./$d\"" .claude-plugin/plugin.json     || err "$d: not registered in plugin.json"
   grep -qF "$d/SKILL.md" README.md                   || err "$d: not listed in README.md"
-  grep -q '\.\./' "$f"                               && err "$f: deep cross-file ref ('../') — compose by naming, not relative links"
+  grep -q '\.\./' "$f"                               && err "$f: deep cross-file ref ('../'): compose by naming, not relative links"
   desc_len=$(awk '/^description:/{sub(/^description: */,""); gsub(/^"|"$/,""); print length; exit}' "$f")
   [ -n "$desc_len" ] && [ "$desc_len" -le "$desc_max" ] \
     || err "$f: description length ${desc_len:-0} > $desc_max chars"

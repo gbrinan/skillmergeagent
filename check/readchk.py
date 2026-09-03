@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""readchk — 팩을 어떻게 읽었는지 먼저 적고, 미결 갈래를 하나만 앞세운다.
+"""readchk: 팩을 어떻게 읽었는지 먼저 적고, 미결 갈래를 하나만 앞세운다.
 
 사용: python3 check/readchk.py <팩 경로>   → DECISIONS.md 를 쓰고 요약을 출력
 
 paperthin `depth/readchk`의 규칙을 도구에 옮긴 것:
-  · 되풀이가 아니라 재진술 — 필드 나열이 아니라 읽은 결과를 문장으로
-  · 맥락이 답하면 조용히 — 파일이 이미 말해주는 것은 묻지 않는다
-  · 한 번에 한 갈래 — 미결이 여럿이면 가장 무거운 하나만 앞세운다
-  · 범위를 바꾸는 모호함을 조용히 기본값으로 때우지 않는다 — 기록해서 보이게 둔다
+  · 되풀이가 아니라 재진술: 필드 나열이 아니라 읽은 결과를 문장으로
+  · 맥락이 답하면 조용히: 파일이 이미 말해주는 것은 묻지 않는다
+  · 한 번에 한 갈래: 미결이 여럿이면 가장 무거운 하나만 앞세운다
+  · 범위를 바꾸는 모호함을 조용히 기본값으로 때우지 않는다: 기록해서 보이게 둔다
 
 핵심은 막지 않는 것이다. 미결이 있어도 팩은 그대로 돌아가고, 결정만 눈에 보이게 남는다.
 """
@@ -18,7 +18,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _common import find_skills, halt_list, has_criteria, has_halt, human_of, next_of, parse_contract, parse_skill
 
-STAKES = {  # 갈래의 무게 — 숫자가 작을수록 먼저 정해야 한다
+STAKES = {  # 갈래의 무게: 숫자가 작을수록 먼저 정해야 한다
     "검수없음": (1, "사람 확인 없이 결과가 나간다"),
     "기록자충돌": (2, "같은 표에 둘이 써서 데이터가 덮인다"),
     "임계값상충": (3, "같은 규칙이 문서마다 다른 값이다"),
@@ -37,7 +37,7 @@ def main(pack_dir):
         if meta:
             skills[meta.get("name", p.parent.name)] = (meta, body)
     if not skills:
-        print("🔴 스킬을 찾지 못했습니다 — 읽을 것이 없습니다")
+        print("🔴 스킬을 찾지 못했습니다. 읽을 것이 없습니다")
         return 2
 
     plan = (pack / "agent-plan.md").read_text(encoding="utf-8") if (pack / "agent-plan.md").is_file() else ""
@@ -63,7 +63,7 @@ def main(pack_dir):
     if branching:
         kind = "팀 에이전트(갈림길 있음)"
     elif known_human and len(ai) < 3:
-        kind = f"팀 스킬팩(순차 실행) — AI 태스크 {len(ai)}개"
+        kind = f"팀 스킬팩(순차 실행), AI 태스크 {len(ai)}개"
     else:
         kind = "팀 스킬팩(순차 실행)"
 
@@ -122,16 +122,16 @@ def main(pack_dir):
            "", "## 이해한 바", ""] + restate + ["", "## 아직 정해지지 않은 것", ""]
     if not forks:
         doc += ["정해지지 않은 것이 없습니다. 모든 항목이 파일에서 확정되었습니다.", ""]
-        print("🟢 미결 없음 — 파일이 모든 것을 답했습니다")
+        print("🟢 미결 없음. 파일이 모든 것을 답했습니다")
     else:
         k, item, why, opts = forks[0]
-        doc += [f"### ① 가장 먼저 정할 것 — {item}", "", f"**무엇이 문제인가**: {why}", "",
+        doc += [f"### ① 가장 먼저 정할 것: {item}", "", f"**무엇이 문제인가**: {why}", "",
                 f"**왜 이것부터인가**: {STAKES.get(k, (99, ''))[1]}", "", "**선택지**", ""]
         doc += [f"{i}. {o}" for i, o in enumerate(opts, 1)]
         doc += ["", "> 이 결정은 **기본값으로 채우지 않았습니다.** 팀이 고른 뒤 이 문서에 답을 적으십시오.", ""]
         if len(forks) > 1:
-            doc += ["### 그 밖에 (①을 정한 뒤 순서대로)", ""] + [f"- **{it}** — {wy}" for _, it, wy, _ in forks[1:]] + [""]
-        print(f"🟡 미결 {len(forks)}건 — 가장 먼저 정할 것: 「{item}」\n   {why}")
+            doc += ["### 그 밖에 (①을 정한 뒤 순서대로)", ""] + [f"- **{it}**: {wy}" for _, it, wy, _ in forks[1:]] + [""]
+        print(f"🟡 미결 {len(forks)}건. 가장 먼저 정할 것: 「{item}」\n   {why}")
         if len(forks) > 1:
             print(f"   나머지 {len(forks) - 1}건은 DECISIONS.md에 순서대로 적어두었습니다.")
     doc += ["---", "", "이 미결이 남아 있어도 팩은 그대로 돌아갑니다. 결정이 나면 해당 파일을 고치고 이 문서를 갱신하십시오.", ""]

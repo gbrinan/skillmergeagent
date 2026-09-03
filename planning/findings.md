@@ -53,6 +53,8 @@
 | detool | README의 도구 이름은 설치 런북 성격. 유지 |
 | 외부 린터 skillscheck | 사분면 중첩 레이아웃을 스킬로 오인(에러 3), 한국어 설명을 "when 없음"으로 경고. 도입 보류 |
 
+두 번째 냉독(수정 후, 별도 세션): README와 skillmerge 모두 **needs work → minor gaps**. 남은 걸림(작업 디렉터리·`planning/` 위치·표와 확인표 구분·`halt_at`·v0·5문항·`askflow`·`re0`·동일 판정에 판단기준 포함·손 대조의 🟢 정의)은 세 번째 커밋에서 인라인 정의로 해소.
+
 ### 도입 후보 판정
 
 도입: H1 합치기 전 스냅샷(Hermes rollback) · H3 규격 드리프트 가드(paperthin check-catalog-sync). 보류: H2 공통부분 추출(분류 의미 변경이라 사용자 결정) · H4 planning-with-files(파일명 고정·공존 불가) · H5 사용량 신호(런타임 카운터 없음) · H6 skillscheck · H8 상류 어댑터(프로필 몫). 불가: H7 SkillOpt(실행 궤적 전제).

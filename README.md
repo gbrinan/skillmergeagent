@@ -66,7 +66,7 @@ npx skills@latest add gbrinan/skillmergeagent --global --agent '*'
 
 | 스킬 | 하는 일 | 범위 | 호출 | 읽기 전용 |
 | --- | --- | --- | --- | --- |
-| 🧲 **[skillmerge](./skills/breadth/skillmerge/SKILL.md)** | 같은 일을 하는 스킬을 찾아 승인 뒤 하나로 합친다. 폐기는 보관 | 스킬 여럿, 팩 여럿 | model | |
+| 🧲 **[skillmerge](./skills/breadth/skillmerge/SKILL.md)** | 같은 일을 하는 스킬을 찾아 승인 뒤 하나로 합친다. 다른 일인데 같은 문단을 들고 있으면 문단만 `shared/`로 뽑는다. 폐기는 보관 | 스킬 여럿, 팩 여럿 | model | |
 | 🧵 **[weave](./skills/breadth/weave/SKILL.md)** | 합쳐지지 않는 스킬을 체인·갈림길·정지 지점으로 엮어 처음부터 끝까지 덮는다 | 스킬 여럿 | model | |
 
 ### `coil/`
@@ -86,7 +86,7 @@ npx skills@latest add gbrinan/skillmergeagent --global --agent '*'
       │
       ├─ askflow     확인표 통째 확인 → (없음) 칸만 한 질문씩 → agent-plan.md(SSOT) + CONTRACT.md
       │
-      ├─ skillmerge  유사도 감사(check/similarity.py) → 동일·포함은 합침 계획 → 승인 → v0로 재작성, 폐기는 archive/
+      ├─ skillmerge  유사도 감사(check/similarity.py) → 동일·포함은 합침, 공통부분은 shared/로 추출 → 승인 → v0로 재작성, 폐기는 archive/
       │
       ├─ weave       남은 스킬을 맥락 군집 → outputs↔inputs로 체인 → 갈림길·halt_at → 커버리지 표(빠진 스킬 0)
       │
@@ -110,6 +110,7 @@ npx skills@latest add gbrinan/skillmergeagent --global --agent '*'
 ├── DECISIONS.md       이해한 바 + 아직 안 정해진 것      (나중에 감사하는 사람)
 ├── skills/<사분면>/<이름>/SKILL.md   합치고 엮은 스킬들   (AI)
 ├── archive/<이름>/    합치며 폐기한 스킬 + 이유          (다음 판의 자료)
+├── shared/<주제>.md   여러 스킬이 함께 가리키는 공통 문단  (하나의 사실은 한 곳에)
 └── data/              원본 데이터
 ```
 
@@ -171,7 +172,7 @@ skillmergeagent/
 ├── check/               ← 유사도 감사 · readchk · 계약 게이트 · 통합 점검기
 ├── scripts/             ← 스킬 카탈로그 검증
 ├── docs/                ← 점검 기준
-├── examples/            ← before/ (통폐합 전, 팀원 3명의 날것) · after/ (합치고 엮어 점검 통과한 팩)
+├── examples/            ← before/ (통폐합 전, 팀원 3명의 날것) · after/ (합치고 엮어 점검 통과한 팩) · shared/ (다른 일인데 같은 문단을 든 두 스킬)
 └── planning/            ← 이 저장소 자신의 tasks · findings · progress (스킬로 스킬을 만든 기록)
 ```
 

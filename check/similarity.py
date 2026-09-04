@@ -7,7 +7,8 @@
   io     입력·출력 이름 겹침 (Jaccard, 표기 정규화)
   table  읽고 쓰는 표 겹침
   text   판단기준·본문 키워드 겹침 (한국어 2글자 이상 어절 + 영단어)
-그리고 분류를 제안한다: 동일(합침) · 포함(흡수) · 동명이인(합치지 않음, 갈림길) · 인접(체인) · 무관.
+  shared  같은 문장(12자 이상)을 몇 줄 공유하는가. 설정·보일러플레이트가 복사된 흔적
+그리고 분류를 제안한다: 동일(합침) · 포함(흡수) · 동명이인(합치지 않음, 갈림길) · 공통부분(합치지 않고 공통 문단을 참조 파일로) · 인접(체인) · 무관.
 분류는 제안이지 판정이 아니다. 합칠지는 팀이 정하고, 합침은 승인 뒤에만 한다.
 """
 import re
@@ -34,6 +35,19 @@ def tokens(body):
     return toks
 
 
+def lines_of(body):
+    """본문의 문장 단위 집합. 불릿·번호를 떼고 12자 이상만 센다. 제목은 뺀다."""
+    out = set()
+    for raw in re.sub(r"```.*?```", " ", body, flags=re.S).splitlines():
+        line = re.sub(r"^\s*(?:[-*]|\d+\.)\s*", "", raw).strip()
+        if len(line) >= 12 and not line.startswith("#"):
+            out.add(line)
+    return out
+
+
+SHARED_MIN = 3  # 이 줄 수 이상 같은 문장을 공유하면 공통 문단으로 본다
+
+
 def jaccard(a, b):
     if not a and not b:
         return None
@@ -52,7 +66,7 @@ def load(dirs):
             f = lambda k: {norm(x) for x in (meta.get(k) or [])}
             skills.append({"name": meta.get("name", p.parent.name), "path": str(p),
                            "in": f("inputs"), "out": f("outputs"), "tab": f("reads") | f("writes"),
-                           "writes": f("writes"), "text": tokens(body)})
+                           "writes": f("writes"), "text": tokens(body), "lines": lines_of(body)})
     return skills
 
 
@@ -65,6 +79,7 @@ def classify(a, b):
     tab = jaccard(a["tab"], b["tab"])
     txt = jaccard(a["text"], b["text"]) or 0.0
     chain = bool(a["out"] & b["in"]) or bool(b["out"] & a["in"])
+    shared = len(a["lines"] & b["lines"])
     io_v = io if io is not None else 0.0
     tab_v = tab if tab is not None else io_v
     score = 0.45 * io_v + 0.25 * tab_v + 0.30 * txt
@@ -72,6 +87,9 @@ def classify(a, b):
               ((a["in"] <= b["in"] and a["out"] <= b["out"]) or (b["in"] <= a["in"] and b["out"] <= a["out"])))
     if io_v >= 0.6 and tab_v >= 0.5:
         kind = "동일 → 합침 후보" if txt >= 0.3 else "동명이인 → 합치지 않음(판단기준 다름, 갈림길 검토)"
+    elif shared >= SHARED_MIN:
+        # 다른 일을 하는데 같은 문단을 들고 있다. 합치는 게 아니라 그 문단을 한 곳으로 뽑는다
+        kind = f"공통부분 → 참조 추출(같은 문장 {shared}줄)" + (" +인접" if chain else "")
     elif chain:
         kind = "인접 → 체인(weave)"  # 출력이 입력으로 이어지면 같은 일이 아니라 앞뒤 일이다
     elif subset and tab_v >= 0.5:
@@ -102,7 +120,7 @@ def main(argv):
     for i in range(len(skills)):
         for j in range(i + 1, len(skills)):
             score, io, tab, txt, kind = classify(skills[i], skills[j])
-            if show_all or kind.startswith(("동일", "포함", "동명", "인접")) or score >= minimum:
+            if show_all or kind.startswith(("동일", "포함", "동명", "공통", "인접")) or score >= minimum:
                 rows.append((score, skills[i]["name"], skills[j]["name"], io, tab, txt, kind))
     rows.sort(key=lambda r: -r[0])
     print(f"스킬 {len(skills)}개, 후보 쌍 {len(rows)}개 (점수 ≥ {minimum} 또는 분류가 있는 쌍)\n")
@@ -111,11 +129,14 @@ def main(argv):
     for score, a, b, io, tab, txt, kind in rows:
         print(f"| {score:.2f} | {a} | {b} | {fmt(io)} | {fmt(tab)} | {txt:.2f} | {kind} |")
     merges = [r for r in rows if r[6].startswith(("동일", "포함"))]
+    shared = [r for r in rows if r[6].startswith("공통")]
     print()
     if merges:
         print(f"→ 합침·흡수 후보 {len(merges)}쌍. 계획을 보고하고 승인 뒤에만 합칩니다(skillmerge).")
     else:
         print("→ 합침 후보 없음. 빈 결과는 유효합니다. 통폐합을 정당화하려고 유사도를 부풀리지 않습니다.")
+    if shared:
+        print(f"→ 공통 문단 {len(shared)}쌍. 합치지 않고 그 문단을 참조 파일 하나로 뽑아 두 스킬이 가리키게 합니다.")
     return 0
 
 

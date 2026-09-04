@@ -53,7 +53,7 @@
 - [x] readchk: 판단기준없음 갈래(한 갈래로 묶음) · `check_spec_sync.py`(H3) · CI 2단계 추가
 - [x] dedash: em-dash 95개를 역할별로 치환(제목·정의는 콜론, 급전환은 마침표, 덧붙임은 괄호·쉼표). 코드 식별자·URL은 없었음
 - [x] planning-with-files: 전환하지 않고 `planfiles`가 물러나는 규칙으로 공존 (아래 결정)
-- [ ] 사용자 결정 대기: 공통부분 추출(H2)
+- [x] H2 공통부분 추출: similarity에 같은 문장 줄 수 축, skillmerge에 여섯 번째 분류(합치지 않고 shared/로 뽑기), examples/shared와 CI 회귀
 
 ## Key Questions
 
@@ -74,6 +74,7 @@
 | 판단기준 없음은 실패가 아니라 미결(readchk) | 규칙이 불릿으로만 있는 외부 팩(team-agent)에서 4/5 오탐. 막지 않고 보이게 두고 한 갈래로 묶었다 |
 | 합치기 전 스냅샷(커밋 또는 archive/_snapshot) | Hermes Curator의 rollback에서 가져옴. 되돌릴 수 없으면 합치지 않는다 |
 | 규격 정본은 `_common.py`, 복사본은 `check_spec_sync.py`가 지킨다 | paperthin check-catalog-sync와 같은 자리. 자기완결 복사를 링크로 바꾸지 않는다 |
+| 공통부분은 합침이 아니라 추출 | 다른 일을 하는 두 스킬이 같은 문단(설정·보일러플레이트)을 들고 있으면 스킬이 아니라 문단을 한 곳으로 옮긴다. 하나의 사실은 한 곳에. 뽑은 뒤 남은 본문이 같아지면 그때 동일이다 |
 | planning-with-files로 갈아타지 않고 `planfiles`가 물러나는 규칙을 둔다 | 그쪽은 파일명 고정·단독 소유 전제라 두 스킬이 같은 파일을 쓰면 덮어쓴다. 훅은 특정 호스트의 플러그인 설치에서만 붙어 이식성 이점이 없다. 우리 스킬을 없애면 세 파일 규칙의 집이 사라진다. 물러나는 규칙 한 줄이면 충돌 없이 어느 쪽 팀도 쓴다 |
 
 ## Errors Encountered

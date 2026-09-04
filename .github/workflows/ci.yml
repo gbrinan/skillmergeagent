@@ -19,6 +19,8 @@ jobs:
         run: python3 check/run_check.py --self
       - name: Similarity audit flags the duplicate pair (before)
         run: python3 check/similarity.py examples/before | tee /tmp/sim.txt && grep -q "합침 후보" /tmp/sim.txt
+      - name: Similarity audit proposes shared-reference extraction, not a merge (shared)
+        run: python3 check/similarity.py examples/shared | tee /tmp/sh.txt && grep -q "참조 추출" /tmp/sh.txt && ! grep -q "동일 → 합침" /tmp/sh.txt
       - name: Contract gate and integration check pass (after)
         run: python3 check/check_contract.py examples/after --run-check
       - name: readchk leaves no undecided fork (after)

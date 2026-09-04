@@ -52,6 +52,11 @@
 | similarity.py | examples/shared | 공통부분 → 참조 추출, 합침 아님 | 같은 문장 6줄, 참조 추출 | ✅ |
 | similarity.py (외부) | Jcurve 두 팩 9스킬 | 공통부분 오탐 0 | 0 | ✅ |
 | intake (사람이 지시문대로) | Jcurve upstream 와이어프레임 3 + ATF 1 | 카드·확인표·제안, 지어낸 값 0 | 카드 3, (없음) 9칸, (추정) 2곳, 인터뷰 항목 6 | ✅ |
+| parse_skill | 공개 리포 6개 692 SKILL.md | 전부 파싱 | 692/692 | ✅ |
+| similarity.py | k-skill 123 | 스텁은 판단 보류, 합침 후보 0 | 스텁 123, 후보 0 | ✅ |
+| similarity.py | NVIDIA 351 | 진짜 중복은 잡고 가족은 묶음 | 동일 2, 가족 25(57·30·11·11·8…) | ✅ |
+| similarity.py | anthropics · superpowers · wshobson | 오탐 최소 | 합침 0, 공통부분 1·0·3 | ✅ |
+| readchk.py | anthropics 20개(카탈로그) | 흐름 갈래 없음 | 판단기준 없음 1건(5스킬)만 | ✅ |
 
 ## Error Log
 
@@ -67,7 +72,7 @@
 | Question | Answer |
 | --- | --- |
 | 1. 현재 어느 단계인가? | Phase 7 완료, PR #1에 다섯 번째 커밋(H2) |
-| 2. 다음에 할 일은? | 실측 2: SKILL.md가 있는 실제 팀 폴더에 intake → askflow |
+| 2. 다음에 할 일은? | 실측 3: 실제 팀 폴더에 intake → askflow (사람이 답할 인터뷰 필요) |
 | 3. 목표는? | tasks.md의 Goal |
 | 4. 지금까지 배운 것? | findings.md의 Learnings |
 | 5. 완료한 작업은? | 위 세션 기록 |

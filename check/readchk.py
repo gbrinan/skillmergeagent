@@ -75,11 +75,14 @@ def main(pack_dir):
          + (f" ({', '.join(human_only)})" if human_only else "")) if known_human else
         "- 태스크별 사람 여부(자동·증강·사람고유)가 스킬에 적혀 있지 않아 판정하지 않았다",
         f"- 산출물 유형: {kind}",
-        f"- 흐름의 끝: {', '.join(terminals)}",
+        f"- 흐름의 끝: {', '.join(terminals)}" if any(nexts.values()) or len(skills) == 1 else "- 흐름의 끝: (엮지 않음)",
     ]
 
     forks = []
-    for t in terminals:  # ① 끝에 사람 확인이 있는가
+    is_catalog = not any(nexts.values()) and len(skills) > 1
+    if is_catalog:
+        restate.append("- 어느 스킬에도 `next`가 없다. 아직 엮지 않은 스킬 묶음(카탈로그)으로 보고 흐름·정지 지점 판정은 건너뛴다. `weave` 뒤에 다시 읽는다")
+    for t in ([] if is_catalog else terminals):  # ① 끝에 사람 확인이 있는가
         meta, body = skills[t]
         if humans.get(t) != "사람고유" and not has_halt(body):
             forks.append(("검수없음", t,
@@ -88,7 +91,7 @@ def main(pack_dir):
                            "뒤따르는 다른 흐름이 검수 지점임을 기록한다",
                            "검수 없이 나가는 설계임을 위험으로 명시하고 그대로 둔다"]))
     halt = set(halt_list(contract))  # ② 중간 사람 판단이 halt_at에 있는가
-    for n in human_only:
+    for n in ([] if is_catalog else human_only):
         if n not in terminals and n not in halt:
             forks.append(("중간정지누락", n,
                           f"「{n}」은 사람이 판단하는데 흐름 중간에 있습니다. 점검기의 L4는 끝점만 보므로 이 자리는 검사되지 않습니다.",

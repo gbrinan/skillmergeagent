@@ -40,12 +40,14 @@ def lines_of(body):
     out = set()
     for raw in re.sub(r"```.*?```", " ", body, flags=re.S).splitlines():
         line = re.sub(r"^\s*(?:[-*]|\d+\.)\s*", "", raw).strip()
-        if len(line) >= 12 and not line.startswith("#"):
+        if len(line) >= 12 and not line.startswith("#") and re.search(r"[A-Za-z가-힣0-9]{3}", line):  # 표 괘선 같은 기호 줄은 문장이 아니다
             out.add(line)
     return out
 
 
 SHARED_MIN = 3  # 이 줄 수 이상 같은 문장을 공유하면 공통 문단으로 본다
+BOILER_MIN_SKILLS, BOILER_RATIO = 5, 0.3  # 이만큼 많은 스킬에 있는 줄은 리포 공통 틀이다. 두 스킬의 공통이 아니다
+STUB_MAX_LINES = 3  # 틀을 뺀 뒤 남는 문장이 이보다 적으면 본문이 없는 스텁이다
 
 
 def jaccard(a, b):
@@ -66,7 +68,23 @@ def load(dirs):
             f = lambda k: {norm(x) for x in (meta.get(k) or [])}
             skills.append({"name": meta.get("name", p.parent.name), "path": str(p),
                            "in": f("inputs"), "out": f("outputs"), "tab": f("reads") | f("writes"),
-                           "writes": f("writes"), "text": tokens(body), "lines": lines_of(body)})
+                           "writes": f("writes"), "text": tokens(body), "lines": lines_of(body),
+                           "has_io": bool(meta.get("inputs") or meta.get("outputs"))})
+    # 리포 공통 틀: 많은 스킬이 똑같이 가진 줄(생성된 스텁, 공통 머리말)은 두 스킬의 공통이 아니다
+    if len(skills) >= BOILER_MIN_SKILLS:
+        df = {}
+        for s in skills:
+            for line in s["lines"]:
+                df[line] = df.get(line, 0) + 1
+        boiler = {line for line, n in df.items() if n >= BOILER_MIN_SKILLS and n / len(skills) >= BOILER_RATIO}
+        for s in skills:
+            s["lines"] = s["lines"] - boiler
+            s["stub"] = len(s["lines"]) < STUB_MAX_LINES
+        load.boiler = boiler
+    else:
+        load.boiler = set()
+    for s in skills:
+        s.setdefault("stub", len(s["lines"]) < STUB_MAX_LINES)
     return skills
 
 
@@ -85,8 +103,12 @@ def classify(a, b):
     score = 0.45 * io_v + 0.25 * tab_v + 0.30 * txt
     subset = (a["in"] and a["out"] and b["in"] and b["out"] and
               ((a["in"] <= b["in"] and a["out"] <= b["out"]) or (b["in"] <= a["in"] and b["out"] <= a["out"])))
-    if io_v >= 0.6 and tab_v >= 0.5:
+    if a["stub"] or b["stub"]:
+        kind = "스텁(본문 없음) → 판단 보류"  # 본문이 다른 곳에 있다. SKILL.md만으로는 같은 일인지 알 수 없다
+    elif io_v >= 0.6 and tab_v >= 0.5:
         kind = "동일 → 합침 후보" if txt >= 0.3 else "동명이인 → 합치지 않음(판단기준 다름, 갈림길 검토)"
+    elif not a["has_io"] and not b["has_io"] and txt >= 0.8:
+        kind = "동일(본문이 거의 같음) → 합침 후보"  # 입출력 필드가 없는 스킬은 본문으로만 판정한다
     elif shared >= SHARED_MIN:
         # 다른 일을 하는데 같은 문단을 들고 있다. 합치는 게 아니라 그 문단을 한 곳으로 뽑는다
         kind = f"공통부분 → 참조 추출(같은 문장 {shared}줄)" + (" +인접" if chain else "")
@@ -122,8 +144,15 @@ def main(argv):
             score, io, tab, txt, kind = classify(skills[i], skills[j])
             if show_all or kind.startswith(("동일", "포함", "동명", "공통", "인접")) or score >= minimum:
                 rows.append((score, skills[i]["name"], skills[j]["name"], io, tab, txt, kind))
+    rows = [r for r in rows if not r[6].startswith("스텁")]
     rows.sort(key=lambda r: -r[0])
-    print(f"스킬 {len(skills)}개, 후보 쌍 {len(rows)}개 (점수 ≥ {minimum} 또는 분류가 있는 쌍)\n")
+    stubs = [s["name"] for s in skills if s["stub"]]
+    print(f"스킬 {len(skills)}개, 후보 쌍 {len(rows)}개 (점수 ≥ {minimum} 또는 분류가 있는 쌍)")
+    if load.boiler:
+        print(f"리포 공통 틀 {len(load.boiler)}줄은 공통 문단 계산에서 뺐다 (스킬 {BOILER_MIN_SKILLS}개 이상, {int(BOILER_RATIO*100)}% 이상이 같은 줄)")
+    if stubs:
+        print(f"스텁(틀을 빼면 본문이 {STUB_MAX_LINES}줄 미만) {len(stubs)}개는 판단 보류: " + ", ".join(stubs[:6]) + (" …" if len(stubs) > 6 else ""))
+    print()
     print("| 점수 | A | B | io | table | text | 분류(제안) |")
     print("| --- | --- | --- | --- | --- | --- | --- |")
     for score, a, b, io, tab, txt, kind in rows:
@@ -137,6 +166,22 @@ def main(argv):
         print("→ 합침 후보 없음. 빈 결과는 유효합니다. 통폐합을 정당화하려고 유사도를 부풀리지 않습니다.")
     if shared:
         print(f"→ 공통 문단 {len(shared)}쌍. 합치지 않고 그 문단을 참조 파일 하나로 뽑아 두 스킬이 가리키게 합니다.")
+        if len(shared) >= 20:  # 쌍이 많으면 한 가족이 한 틀을 나눠 쓰는 것이다. 쌍이 아니라 가족 단위로 보인다
+            parent = {}
+            def find(x):
+                while parent.setdefault(x, x) != x:
+                    parent[x] = parent[parent[x]]; x = parent[x]
+                return x
+            for _, a, b, *_r in shared:
+                parent[find(a)] = find(b)
+            fam = {}
+            for _, a, b, *_r in shared:
+                fam.setdefault(find(a), set()).update((a, b))
+            fams = sorted(fam.values(), key=len, reverse=True)
+            print(f"   가족 {len(fams)}개로 묶입니다. 가족마다 참조 파일 하나면 됩니다:")
+            for f in fams[:5]:
+                names = sorted(f)
+                print(f"   · {len(names)}개: " + ", ".join(names[:4]) + (" …" if len(names) > 4 else ""))
     return 0
 
 

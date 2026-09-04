@@ -71,6 +71,23 @@
 
 또 하나: ATF 보고서의 6기준 출처 줄에 "Design Camp"가 있다. 사용자가 처음에 말한 "디자인캠프"는 이 6기준(반복성·위임 가능성·다단계성·순서 가변성·가치·검증 가능성)의 출처다. 엔진의 산출물 유형 표(다단계성 3개, 갈림길)가 그 기준의 ③·④를 옮긴 것임을 `docs/check-criteria.md`가 이미 말하고 있다.
 
+### 실측 2: 공개 스킬 리포 6개 (2026-09-04)
+
+[k-skill](https://github.com/NomaDamas/k-skill)(123) · [NVIDIA/skills](https://github.com/nvidia/skills)(351) · [wshobson/agents](https://github.com/wshobson/agents)(183) · [anthropics/skills](https://github.com/anthropics/skills)(20) · [obra/superpowers](https://github.com/obra/superpowers)(14) · [vercel-labs/skills](https://github.com/vercel-labs/skills)(1). 읽기 전용으로 파서·유사도·readchk를 돌렸다.
+
+| 본 것 | 결과 |
+| --- | --- |
+| frontmatter 파싱 | 692/692. name=폴더 일치는 NVIDIA 333/351(따옴표 값 18개, 파서가 따옴표를 벗기게 고침), anthropics 19/20(`template/`) |
+| 우리 필드(inputs·outputs·reads·writes·next) | 0/692. 공개 스킬은 name·description(+license·metadata·allowed-tools)만 쓴다. 팩 규격은 팀 팩의 것이고, 공개 카탈로그에는 유사도의 본문 축만 통한다 |
+| 레이아웃 | `skills/<이름>/`(anthropics·superpowers·NVIDIA), `plugins/<x>/skills/<이름>/`(wshobson), 루트 바로 아래(k-skill). 우리 `skills/<사분면>/<이름>/`는 없었다 |
+| k-skill | 123개 전부 `npx … instruct`로 본문을 받아오는 생성 스텁. 틀을 빼면 본문이 없어 SKILL.md만으로는 같은 일인지 알 수 없다 → 스텁 보류 |
+| NVIDIA | 진짜 중복 1쌍(`nvidia-skill-finder`가 skills/와 plugins/ 두 곳), 본문 87% 같은 1쌍, 그리고 doca-(57개)·tao-(30개)·dicom·vss·jetson 가족이 36~75줄을 나눠 씀 → 가족마다 참조 파일 하나 |
+| anthropics·superpowers·wshobson | 합침 후보 0. 공통부분 1·0·3쌍(작음). 유사도가 부풀리지 않았다 |
+| readchk를 카탈로그에 | anthropics 20개에 검수없음 18건이 떴다(모든 스킬이 끝점). `next`가 하나도 없으면 카탈로그로 보고 흐름 갈래를 건너뛰게 고쳤다 |
+| 판단기준 감지(영어) | wshobson 42/183 → 175/183, NVIDIA 151 → 이후 재측정 필요 |
+
+배운 것: 공개 카탈로그에서 통폐합의 신호는 입출력이 아니라 "같은 틀을 나눠 쓰는 가족"이다. 가족은 합칠 대상이 아니라 참조 파일 하나로 뽑을 대상이다. 그리고 생성 스텁은 유사도로 판단하면 안 된다.
+
 ### H2 결정: 공통 부분 추출 (2026-09-04)
 
 `similarity.py`에 네 번째 신호를 넣었다: 불릿·번호를 뗀 12자 이상 문장을 몇 줄 공유하는가. 3줄 이상이면 동일·동명이인 다음 순위로 "공통부분 → 참조 추출"을 제안한다. `examples/shared/`의 두 스킬(고객 회신 · 협력사 재요청)은 입출력·표가 전혀 다르지만 메일 설정 6줄이 같아 이 분류로 잡히고, 외부 팩(Jcurve 두 팩 9스킬)에서는 오탐이 없었다. `skillmerge`는 이 쌍을 합치지 않고 문단을 `shared/<주제>.md`로 옮겨 두 스킬이 가리키게 한다.

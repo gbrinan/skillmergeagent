@@ -47,17 +47,24 @@ def parse_skill(path):
             v = v.split("]", 1)[0]
             meta[k.strip()] = [x.strip() for x in v.strip("[]").split(",") if x.strip()]
         else:
+            v = v.strip().strip('"').strip("'")
             meta[k.strip()] = None if v in ("null", "~", "") else v
     return meta, m.group(2)
 
 
 def find_skills(pack):
-    """skills/<사분면>/<이름>/SKILL.md (대소문자 무관). archive/ 아래는 제외."""
+    """skills/ 아래 어느 깊이의 SKILL.md든 (대소문자 무관). 규격은 skills/<사분면>/<이름>/이지만
+    실측한 공개 리포는 skills/<이름>/ 나 plugins/<x>/skills/<이름>/ 를 쓰므로 깊이를 가리지 않는다.
+    archive/·shared/·node_modules/ 아래는 제외."""
     pack = Path(pack)
     out = []
-    for p in sorted(pack.glob("skills/*/*/*.md")):
-        if p.name.lower() == "skill.md" and "archive" not in p.parts:
-            out.append(p)
+    for p in sorted(pack.rglob("*.md")):
+        if p.name.lower() != "skill.md":
+            continue
+        parts = p.relative_to(pack).parts
+        if "skills" not in parts or any(x in parts for x in ("archive", "shared", "node_modules")):
+            continue
+        out.append(p)
     return out
 
 
@@ -105,10 +112,11 @@ def parse_contract(path):
 def has_criteria(body):
     """본문에 판단기준이 적혀 있는가. '판단기준' 절, 또는 조건→결과 꼴의 규칙 문장."""
     # 인정하는 것: 판단기준·예외·Rules 절 제목, "조건 → 결과" 줄, 조건문 꼴의 문장. 본문에 단어 '판단기준'만 있는 것은 아니다.
-    heading = re.search(r"^#+\s*(판단\s*기준|예외|Rules|Decision criteria)", body, re.M | re.I)
+    heading = re.search(r"^#+\s*(판단\s*기준|예외|Rules?|Decision criteria|Guidelines|Constraints|When to use|Do not|Never)", body, re.M | re.I)
     arrow = re.search(r"^\s*[-*\d.]*\s*[^\n]*→", body, re.M)
     cond = re.search(r"(이면|하면|되면|경우|초과|미만|이상|넘[게으])[^\n]*(한다|로 |으로|분리|제외|정지|멈|보고|표시)", body)
-    return bool(heading or arrow or cond)
+    cond_en = re.search(r"^\s*[-*\d.]*\s*(If|When|Unless|Only if|Never|Always|Do not|Don't)\b", body, re.M)
+    return bool(heading or arrow or cond or cond_en)
 
 
 def halt_list(c):

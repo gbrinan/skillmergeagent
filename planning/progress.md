@@ -51,6 +51,7 @@
 | dedash | 저장소 전체(.git 제외) | em-dash 0개, 검사 전부 통과 | 95 → 0, 전부 통과 | ✅ |
 | similarity.py | examples/shared | 공통부분 → 참조 추출, 합침 아님 | 같은 문장 6줄, 참조 추출 | ✅ |
 | similarity.py (외부) | Jcurve 두 팩 9스킬 | 공통부분 오탐 0 | 0 | ✅ |
+| intake (사람이 지시문대로) | Jcurve upstream 와이어프레임 3 + ATF 1 | 카드·확인표·제안, 지어낸 값 0 | 카드 3, (없음) 9칸, (추정) 2곳, 인터뷰 항목 6 | ✅ |
 
 ## Error Log
 
@@ -66,7 +67,7 @@
 | Question | Answer |
 | --- | --- |
 | 1. 현재 어느 단계인가? | Phase 7 완료, PR #1에 다섯 번째 커밋(H2) |
-| 2. 다음에 할 일은? | 실제 팀 폴더 실측. 사용자 결정 3개는 모두 반영됨 |
+| 2. 다음에 할 일은? | 실측 2: SKILL.md가 있는 실제 팀 폴더에 intake → askflow |
 | 3. 목표는? | tasks.md의 Goal |
 | 4. 지금까지 배운 것? | findings.md의 Learnings |
 | 5. 완료한 작업은? | 위 세션 기록 |

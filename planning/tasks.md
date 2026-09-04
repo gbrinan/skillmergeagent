@@ -29,6 +29,12 @@
 - [x] check/ 이식·일반화 (_common · check_contract · run_check · readchk) + similarity 신설
 - [x] scripts/validate-skills.sh · plugin.json · CI
 
+### Phase 8: 실측 1 (intake를 남이 만든 상류 산출물에) ✅
+
+- [x] Jcurve_SKI `examples/upstream/`(와이어프레임 3개 + ATF 보고서)에 `intake`를 지시문 그대로 수행 → 카드 3장, 확인표 A·B·C, 의도 제안, 인터뷰 목록 6개. 결과는 그 저장소의 `examples/upstream/INTAKE.md`
+- [x] 지시문이 비어 있던 자리 5곳을 `intake`에 추가(이름 우선순위, 여러 파일을 태스크 이름으로 잇기, 표가 아닌 저장 위치, 뜻 모르는 코드, 추정 연결 표시)
+- [ ] 실측 2: 실제 팀 폴더(SKILL.md가 있는 것)에 `intake` → `askflow`까지
+
 ### Phase 4: 예시와 검증 ✅
 
 - [x] examples/before (팀원 3명, 스킬 5개, 중복 1쌍) · examples/after (합치고 엮어 통과)

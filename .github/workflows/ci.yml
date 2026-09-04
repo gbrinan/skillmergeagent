@@ -26,7 +26,7 @@ jobs:
       - name: Similarity thresholds still separate the labeled pairs
         run: python3 check/calibrate.py
       - name: Skill evals exist and parse (3+ scenarios per skill)
-        run: python3 -c "import json,glob,sys; fs=sorted(glob.glob('skills/*/*/evals/evals.json')); assert len(fs)==len(glob.glob('skills/*/*/SKILL.md')), 'a skill has no evals'; [sys.exit(f'{f}: fewer than 3 evals') for f in fs if len(json.load(open(f))['evals'])<3]; print(len(fs),'eval files ok')"
+        run: python3 check/check_evals.py
       - name: Contract gate and integration check pass (after)
         run: python3 check/check_contract.py examples/after --run-check
       - name: readchk leaves no undecided fork (after)

@@ -55,14 +55,14 @@ def parse_skill(path):
 def find_skills(pack):
     """skills/ 아래 어느 깊이의 SKILL.md든 (대소문자 무관). 규격은 skills/<사분면>/<이름>/이지만
     실측한 공개 리포는 skills/<이름>/ 나 plugins/<x>/skills/<이름>/ 를 쓰므로 깊이를 가리지 않는다.
-    archive/·shared/·node_modules/ 아래는 제외."""
+    archive/·shared/·node_modules/·evals/(평가 고정 자료) 아래는 제외."""
     pack = Path(pack)
     out = []
     for p in sorted(pack.rglob("*.md")):
         if p.name.lower() != "skill.md":
             continue
         parts = p.relative_to(pack).parts
-        if "skills" not in parts or any(x in parts for x in ("archive", "shared", "node_modules")):
+        if "skills" not in parts or any(x in parts for x in ("archive", "shared", "node_modules", "evals")):
             continue
         out.append(p)
     return out
@@ -81,7 +81,8 @@ def parse_contract(path):
     if not m:
         return None
     body = re.sub(r"#.*", "", m.group(1))
-    c = {"tables": {}, "writers": {}, "chain": [], "payloads": [], "threshold": None, "halt_at": None}
+    c = {"tables": {}, "writers": {}, "chain": [], "payloads": [], "threshold": None, "halt_at": None,
+         "duplicate_writers": {}}  # 같은 표가 writers에 두 번 적힌 경우. 덮어쓰면 충돌이 사라진다 (평가에서 발견)
     section = None
     for line in body.splitlines():
         if not line.strip():
@@ -105,7 +106,10 @@ def parse_contract(path):
             if section == "tables":
                 c["tables"][k.strip()] = [x.strip() for x in v.split(",") if x.strip()]
             else:
-                c["writers"][k.strip()] = v.strip()
+                k = k.strip()
+                if k in c["writers"] and c["writers"][k] != v.strip():
+                    c["duplicate_writers"].setdefault(k, [c["writers"][k]]).append(v.strip())
+                c["writers"][k] = v.strip()
     return c
 
 

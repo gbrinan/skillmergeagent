@@ -136,6 +136,7 @@ npx skills@latest add gbrinan/skillmergeagent --global --agent '*'
 
 ```bash
 python3 check/similarity.py <폴더> [<폴더>...]        # 통폐합·체인 후보 (읽기 전용)
+python3 check/calibrate.py                           # 유사도 임계값이 이름표 쌍(check/labels.json)을 여전히 가르는가
 python3 check/readchk.py <팩>                          # 읽은 바 + 미결 → DECISIONS.md
 python3 check/check_contract.py <팩> --run-check       # 계약 게이트 → 통과 시 L1~L4 점검
 python3 check/run_check.py --self                      # 이 저장소 자신: README 구조도 ↔ 실제 폴더
@@ -172,7 +173,7 @@ skillmergeagent/
 ├── check/               ← 유사도 감사 · readchk · 계약 게이트 · 통합 점검기
 ├── scripts/             ← 스킬 카탈로그 검증
 ├── docs/                ← 점검 기준
-├── examples/            ← before/ (통폐합 전, 팀원 3명의 날것) · after/ (합치고 엮어 점검 통과한 팩) · shared/ (다른 일인데 같은 문단을 든 두 스킬)
+├── examples/            ← before/ (통폐합 전, 팀원 3명의 날것) · after/ (합치고 엮어 점검 통과한 팩) · shared/ (다른 일인데 같은 문단을 든 두 스킬) · homonym/ (입출력은 같고 판단기준이 다른 두 스킬)
 └── planning/            ← 이 저장소 자신의 tasks · findings · progress (스킬로 스킬을 만든 기록)
 ```
 

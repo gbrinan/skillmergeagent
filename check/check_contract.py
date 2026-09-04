@@ -66,6 +66,8 @@ def main(pack_dir, run_harness=False):
                 finding(YELLOW, name, f"본문의 표 이름 표기가 다름: {t}", (str(path), t, t_canon[norm(t)]))
 
     # 2. 단일 기록자 (정규화해서 비교한다. 표기 차이에 가려진 충돌을 잡는다)
+    for t, names in c.get("duplicate_writers", {}).items():  # 계약 자체가 한 표에 기록자를 둘 적은 경우
+        finding(RED, t, f"계약의 writers에 기록자가 {len(names)}명: {names}. 팀이 한 명으로 정해야 함")
     writers = {}
     for name, (meta, _, _) in skills.items():
         for t in meta.get("writes") or []:

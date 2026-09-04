@@ -36,6 +36,15 @@
 - [x] 실측 2: 공개 스킬 리포 6개(k-skill 123 · NVIDIA 351 · wshobson 183 · anthropics 20 · superpowers 14 · vercel 1)에 파서·유사도·readchk를 돌림. 깨진 곳 5개를 고침(아래 Errors)
 - [ ] 실측 3: 실제 팀 폴더(SKILL.md가 있는 것)에 `intake` → `askflow`까지
 
+### Phase 9: 공식 기준의 빈 곳 채우기 (평가 · 상수 근거) ✅
+
+- [x] 스킬 6개에 `evals/evals.json`(skill-creator 서식) 시나리오 19개. 입력은 `examples/`와 `evals/files/` 고정 자료
+- [x] 시나리오 19개를 스킬 있음으로, 핵심 3개 스킬의 10개는 스킬 없음(baseline)으로도 같은 모델(Sonnet)에서 실행하고 채점. 결과는 progress.md
+- [x] `similarity.py` 상수마다 근거 쌍을 `check/labels.json`에, 여유 보고를 `check/calibrate.py`에. CI에 추가
+- [x] 재도출에서 드러난 오류 1개 수정: 입출력 없는 스킬의 동일 판정을 키워드 겹침 0.8에서 문장 덮임 0.9로 (NVIDIA physical-ai 쌍 오탐)
+- [x] `examples/homonym/` (동명이인 쌍) 추가. TXT_SAME의 음성 사례이자 CI 검사
+- [ ] LICENSE 파일: package.json은 MIT라 하는데 파일이 없다. 사용자 결정 대기
+
 ### Phase 4: 예시와 검증 ✅
 
 - [x] examples/before (팀원 3명, 스킬 5개, 중복 1쌍) · examples/after (합치고 엮어 통과)
@@ -81,6 +90,9 @@
 | 판단기준 없음은 실패가 아니라 미결(readchk) | 규칙이 불릿으로만 있는 외부 팩(team-agent)에서 4/5 오탐. 막지 않고 보이게 두고 한 갈래로 묶었다 |
 | 합치기 전 스냅샷(커밋 또는 archive/_snapshot) | Hermes Curator의 rollback에서 가져옴. 되돌릴 수 없으면 합치지 않는다 |
 | 규격 정본은 `_common.py`, 복사본은 `check_spec_sync.py`가 지킨다 | paperthin check-catalog-sync와 같은 자리. 자기완결 복사를 링크로 바꾸지 않는다 |
+| 유사도 상수는 `labels.json`의 이름표 쌍이 정한다 | Anthropic 지침의 "근거 없는 상수 금지". 상수를 바꾸려면 반대 사례부터 더한다. `calibrate.py`가 여유를 보고하고 CI가 돌린다 |
+| 입출력 없는 스킬의 동일 판정은 문장 덮임(0.9)으로 | 키워드 겹침 0.8은 한 틀로 쓴 다른 스킬(덮임 0.77, 키워드 0.87)을 동일로 잡았다. 진짜 중복은 덮임 1.00 |
+| 평가는 `skills/<사분면>/<이름>/evals/evals.json`에 | skill-creator가 찾는 자리. 고정 자료는 `evals/files/`에 두고 검증기·파서는 `evals/`를 건너뛴다 |
 | 공통부분은 합침이 아니라 추출 | 다른 일을 하는 두 스킬이 같은 문단(설정·보일러플레이트)을 들고 있으면 스킬이 아니라 문단을 한 곳으로 옮긴다. 하나의 사실은 한 곳에. 뽑은 뒤 남은 본문이 같아지면 그때 동일이다 |
 | planning-with-files로 갈아타지 않고 `planfiles`가 물러나는 규칙을 둔다 | 그쪽은 파일명 고정·단독 소유 전제라 두 스킬이 같은 파일을 쓰면 덮어쓴다. 훅은 특정 호스트의 플러그인 설치에서만 붙어 이식성 이점이 없다. 우리 스킬을 없애면 세 파일 규칙의 집이 사라진다. 물러나는 규칙 한 줄이면 충돌 없이 어느 쪽 팀도 쓴다 |
 
@@ -98,6 +110,9 @@
 | 표 괘선 `|---|---|`이 공통 문장으로 셈 | 1 | 글자 3자 없는 줄 제외 |
 | `next`가 없는 카탈로그(anthropics 20개)에 readchk가 검수없음 18건 | 1 | 카탈로그 감지 → 흐름 갈래 건너뜀 |
 | 영어 스킬의 규칙을 판단기준으로 못 봄(wshobson 42/183) | 1 | 영어 절 제목·조건문 신호 추가 → 175/183 |
+| 키워드 겹침 0.8 규칙이 NVIDIA physical-ai 두 DAG(같은 틀, 다른 일)를 동일로 분류 | 1 | 문장 덮임 0.9로 교체, labels.json에 음성으로 고정 |
+| `validate-skills.sh`가 `evals/files/` 안의 고정 자료 SKILL.md를 카탈로그 스킬로 검사 | 1 | `-not -path '*/evals/*'`, `find_skills`도 evals/ 제외 |
+| 평가 실행 서브에이전트 동시 20개 제한으로 baseline 5개 미실행 | 1 | 자리가 나면 다시 띄움 |
 
 ## Notes
 

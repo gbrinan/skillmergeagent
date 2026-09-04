@@ -45,9 +45,25 @@ def lines_of(body):
     return out
 
 
-SHARED_MIN = 3  # 이 줄 수 이상 같은 문장을 공유하면 공통 문단으로 본다
-BOILER_MIN_SKILLS, BOILER_RATIO = 5, 0.3  # 이만큼 많은 스킬에 있는 줄은 리포 공통 틀이다. 두 스킬의 공통이 아니다
+# ── 임계값. 값마다 근거가 되는 실측 쌍이 check/labels.json에 있고, check/calibrate.py가 여유를 보고한다.
+#    상수를 바꾸려면 먼저 labels.json에 반대 사례를 더한다. 근거 없는 상수는 두지 않는다.
+IO_SAME = 0.6   # 입력끼리·출력끼리 겹침 평균. 동일 쌍(회의록요약↔미팅노트정리)은 1.0, 체인 쌍(액션아이템추출↔안건정리)은 0.25,
+                # Jcurve 13개 팩의 비동일 최대 0.17. 0.6은 "다섯 중 셋이 같다"는 뜻이고 양쪽 사이의 빈 구간에 있다.
+TAB_SAME = 0.5  # 읽고 쓰는 표 겹침. 홀로는 가르지 못한다: retry-request↔quote-parse는 표가 전부 같아도(1.0) 다른 일이다.
+                # io와 함께 써야만 뜻이 있다. 동일 쌍 1.0, 동명이인 쌍 0.67.
+TXT_SAME = 0.3  # io·표가 같을 때 동일과 동명이인을 가르는 본문 키워드 겹침. 동일 쌍 0.41, 동명이인 쌍(휴가신청검토↔휴가승인심사) 0.24.
+                # 여유가 0.17뿐이다. 실측 쌍이 둘밖에 없으니 가설로 두고, 실제 팀 팩에서 어긋나면 labels.json에 더하고 다시 잰다.
+COPY_COVERAGE = 0.9  # 입출력 필드가 없는 스킬(공개 카탈로그)끼리의 동일 판정. 같은 문장이 작은 쪽 본문의 이 비율 이상을 덮어야 한다.
+                # NVIDIA 351개 실측: 진짜 중복(nvidia-skill-finder 두 곳)은 1.00, 한 틀로 쓴 다른 스킬(physical-ai 두 DAG)은 0.77.
+                # 처음엔 키워드 겹침 0.8로 봤는데 그 쌍이 0.87로 동일에 잡혔다. 키워드는 틀을 못 가르고 문장 덮임이 가른다.
+TXT_READ = 0.5  # 분류 없이 "사람이 읽고 판단"으로 올리는 키워드 겹침. NVIDIA 6만 쌍의 무관 분포는 중앙값 0.13, 99분위 0.39.
+                # Jcurve의 내용의맥락파악↔워딩(0.89)·공유대상자목록정리↔메일발송(0.55)이 여기 걸렸고 사람이 보니 다른 일이었다.
+SHARED_MIN = 3  # 이 줄 수 이상 같은 문장을 공유하면 공통 문단으로 본다. 1~2줄은 관용구(시작 조건 문장)가 겹친 것이었다(Jcurve 실측)
+BOILER_MIN_SKILLS, BOILER_RATIO = 5, 0.3  # 이만큼 많은 스킬에 있는 줄은 리포 공통 틀이다. 두 스킬의 공통이 아니다 (k-skill 123개 스텁 실측)
 STUB_MAX_LINES = 3  # 틀을 뺀 뒤 남는 문장이 이보다 적으면 본문이 없는 스텁이다
+# 점수 가중치는 표 정렬과 --min 표시 컷에만 쓴다. 분류 규칙은 점수를 보지 않는다.
+# 순서(io > text > table)는 위의 근거를 따른다: io가 "같은 일"의 정의고, 표 겹침은 홀로 뜻이 없다.
+W_IO, W_TAB, W_TXT = 0.45, 0.25, 0.30
 
 
 def jaccard(a, b):
@@ -60,7 +76,7 @@ def load(dirs):
     skills = []
     for d in dirs:
         for p in sorted(Path(d).rglob("*.md")):
-            if p.name.lower() != "skill.md" or "archive" in p.parts:
+            if p.name.lower() != "skill.md" or "archive" in p.parts or "evals" in p.parts:
                 continue
             meta, body = parse_skill(p)
             if meta is None:
@@ -100,15 +116,16 @@ def classify(a, b):
     shared = len(a["lines"] & b["lines"])
     io_v = io if io is not None else 0.0
     tab_v = tab if tab is not None else io_v
-    score = 0.45 * io_v + 0.25 * tab_v + 0.30 * txt
+    score = W_IO * io_v + W_TAB * tab_v + W_TXT * txt
+    cover = shared / max(1, min(len(a["lines"]), len(b["lines"])))  # 같은 문장이 작은 쪽 본문을 얼마나 덮는가
     subset = (a["in"] and a["out"] and b["in"] and b["out"] and
               ((a["in"] <= b["in"] and a["out"] <= b["out"]) or (b["in"] <= a["in"] and b["out"] <= a["out"])))
     if a["stub"] or b["stub"]:
         kind = "스텁(본문 없음) → 판단 보류"  # 본문이 다른 곳에 있다. SKILL.md만으로는 같은 일인지 알 수 없다
-    elif io_v >= 0.6 and tab_v >= 0.5:
-        kind = "동일 → 합침 후보" if txt >= 0.3 else "동명이인 → 합치지 않음(판단기준 다름, 갈림길 검토)"
-    elif not a["has_io"] and not b["has_io"] and txt >= 0.8:
-        kind = "동일(본문이 거의 같음) → 합침 후보"  # 입출력 필드가 없는 스킬은 본문으로만 판정한다
+    elif io_v >= IO_SAME and tab_v >= TAB_SAME:
+        kind = "동일 → 합침 후보" if txt >= TXT_SAME else "동명이인 → 합치지 않음(판단기준 다름, 갈림길 검토)"
+    elif not a["has_io"] and not b["has_io"] and cover >= COPY_COVERAGE:
+        kind = f"동일(같은 문장이 본문의 {int(cover*100)}%) → 합침 후보"  # 입출력 필드가 없는 스킬은 문장 덮임으로만 판정한다
     elif shared >= SHARED_MIN:
         # 다른 일을 하는데 같은 문단을 들고 있다. 합치는 게 아니라 그 문단을 한 곳으로 뽑는다
         kind = f"공통부분 → 참조 추출(같은 문장 {shared}줄)" + (" +인접" if chain else "")
@@ -116,7 +133,7 @@ def classify(a, b):
         kind = "인접 → 체인(weave)"  # 출력이 입력으로 이어지면 같은 일이 아니라 앞뒤 일이다
     elif subset and tab_v >= 0.5:
         kind = "포함 → 흡수 후보"
-    elif txt >= 0.5:
+    elif txt >= TXT_READ:
         kind = "본문 유사 → 사람이 읽고 판단"
     else:
         kind = "무관"

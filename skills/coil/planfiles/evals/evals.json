@@ -1,0 +1,44 @@
+{
+  "skill_name": "planfiles",
+  "files_root": "저장소 루트 기준 경로",
+  "evals": [
+    {
+      "id": 1,
+      "name": "fresh-project-creates-three-files-with-content",
+      "prompt": "이 폴더에서 스킬 통폐합 작업을 시작할 거야. 기록 준비해줘.",
+      "files": ["examples/before", "templates/tasks.md", "templates/findings.md", "templates/progress.md"],
+      "expected_output": "planning/tasks.md · findings.md · progress.md를 만들고 그 자리에서 실제 내용으로 채운다: 목표 한 줄, 첫 단계 체크박스, 폴더에서 이미 알아낸 것(스킬 5개, 중복 후보) 하나 이상. 빈 절이 없다.",
+      "expectations": [
+        "planning/ 아래에 tasks.md, findings.md, progress.md 세 파일이 있다",
+        "tasks.md에 목표 한 줄과 체크박스가 있는 첫 단계가 있다",
+        "findings.md에 폴더에서 실제로 읽은 사실(스킬 이름 등)이 하나 이상 있다",
+        "세 파일 어디에도 템플릿의 자리표시 문구만 남은 빈 절이 없다"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "yield-to-existing-task-plan",
+      "prompt": "작업 기록 좀 정리해줘.",
+      "files": ["skills/coil/planfiles/evals/files/with-task-plan"],
+      "expected_output": "폴더에 task_plan.md가 이미 있으므로 planning/을 새로 만들지 않고 그쪽 파일(task_plan.md · findings.md · progress.md)을 읽고 쓴다. 갱신 시점과 5문항만 지킨다.",
+      "expectations": [
+        "planning/ 폴더를 만들지 않는다",
+        "기존 task_plan.md를 읽고 그 파일을 갱신한다",
+        "다른 계획 스킬의 파일이 있어서 물러났다고 명시한다"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "resume-answers-five-questions-first",
+      "prompt": "이어서 하자.",
+      "files": ["planning"],
+      "expected_output": "tasks.md → findings.md → progress.md 순서로 읽고, 작업을 시작하기 전에 5문항(현재 단계·다음 할 일·목표·배운 것·완료한 것)에 파일 내용으로 답한다. 새 파일을 만들지 않는다.",
+      "expectations": [
+        "5문항에 대한 답이 파일 내용을 근거로 모두 있다",
+        "읽은 순서가 tasks → findings → progress다",
+        "새 계획 파일을 만들거나 기존 파일을 비우지 않는다",
+        "대화 기억이 아니라 파일에 적힌 것만 근거로 답한다"
+      ]
+    }
+  ]
+}

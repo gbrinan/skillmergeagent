@@ -26,14 +26,14 @@ while IFS= read -r f; do
   for sec in "${required_sections[@]}"; do
     grep -qE "^## +${sec}\$" "$f" || err "$f: missing required section '## ${sec}'"
   done
-done < <(find skills -name SKILL.md)
+done < <(find skills -name SKILL.md -not -path '*/evals/*')
 
 while IFS= read -r p; do
   [ -f "$p/SKILL.md" ] || err "plugin.json: '$p' has no SKILL.md"
 done < <(grep -oE '\./skills/[A-Za-z0-9/_-]+' .claude-plugin/plugin.json)
 
 if [ "$fail" -eq 0 ]; then
-  echo "✓ skill catalog valid ($(find skills -name SKILL.md | wc -l | tr -d ' ') skills)"
+  echo "✓ skill catalog valid ($(find skills -name SKILL.md -not -path '*/evals/*' | wc -l | tr -d ' ') skills)"
 else
   echo "✗ catalog validation failed"; exit 1
 fi

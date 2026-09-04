@@ -1,0 +1,55 @@
+{
+  "skill_name": "weave",
+  "files_root": "저장소 루트 기준 경로",
+  "evals": [
+    {
+      "id": 1,
+      "name": "chain-with-halt-and-coverage",
+      "prompt": "합칠 건 나중에 하고, 일단 이 스킬들을 하나의 워크플로우로 엮어줘.",
+      "files": [
+        "examples/before",
+        "templates/CONTRACT.md"
+      ],
+      "expected_output": "outputs↔inputs로 체인(회의록요약 → 액션아이템추출 → 안건정리 → 안건확정)을 잇고, 중복 쌍(회의록요약·미팅노트정리)은 skillmerge 몫이라 한 자리로 표시한다. 사람고유인 안건확정을 halt_at에 넣는다. 커버리지 표에 빠진 스킬이 0이다. 갈림길이 없으므로 '순차 실행'이라 이름 붙인다.",
+      "expectations": [
+        "chain이 한 줄(회의록요약 -> 액션아이템추출 -> 안건정리 -> 안건확정 꼴)이고 미팅노트정리는 같은 자리의 중복으로 표시된다. 두 중복의 next가 다른 것(안건정리 vs 액션아이템추출)은 ';' 갈림길로 그리지 않고 미결로 askflow에 넘긴다",
+        "halt_at에 안건확정이 있다",
+        "커버리지 표(스킬 ↔ 단계)가 있고 빠진 스킬이 0이다",
+        "갈림길이 없으므로 순차 실행이라고 이름 붙이고 갈림길을 지어내지 않는다"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "fork-syntax-and-missing-next",
+      "prompt": "휴가 스킬 두 개를 워크플로우로 엮어줘.",
+      "files": [
+        "examples/homonym",
+        "templates/CONTRACT.md"
+      ],
+      "expected_output": "판단기준이 다른 두 스킬을 갈림길로 그리고 chain을 ';'로 경로를 나눠 적는다(예: 휴가신청검토 -> 결과통보; 휴가승인심사 -> 결과통보). 갈림 조건(어느 팀의 신청인가)은 파일에 없으므로 지어내지 않고 askflow에 넘긴다. next인 결과통보가 없음을 빠진 스킬로 표시한다.",
+      "expectations": [
+        "chain에 ';'로 나눈 두 경로가 있다",
+        "갈림 조건을 지어내지 않고 askflow의 질문으로 넘긴다",
+        "결과통보가 폴더에 없음을 커버리지 표에 빠진 자리로 표시한다",
+        "두 스킬을 합치자고 하지 않는다"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "two-clusters-two-packs",
+      "prompt": "이 스킬들 전부 하나의 워크플로우로 묶어줘.",
+      "files": [
+        "examples/before",
+        "examples/shared",
+        "templates/CONTRACT.md"
+      ],
+      "expected_output": "맥락 군집이 둘(주간 회의 준비, 메일 회신)이므로 한 체인으로 억지로 잇지 않고 두 팩으로 나눈다. 두 팩의 관계는 연동 맵에 적는다. 각 팩마다 chain·halt_at·커버리지 표를 낸다.",
+      "expectations": [
+        "군집이 둘임을 트리거·표·산출물 기준으로 설명한다",
+        "두 팩으로 나누고 하나의 chain으로 잇지 않는다",
+        "연동 맵에 두 팩의 관계(없으면 '없음')를 적는다",
+        "빠진 스킬이 0인 커버리지 표가 팩마다 있다"
+      ]
+    }
+  ]
+}

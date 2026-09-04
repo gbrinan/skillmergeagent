@@ -57,6 +57,21 @@
 | similarity.py | NVIDIA 351 | 진짜 중복은 잡고 가족은 묶음 | 동일 2, 가족 25(57·30·11·11·8…) | ✅ |
 | similarity.py | anthropics · superpowers · wshobson | 오탐 최소 | 합침 0, 공통부분 1·0·3 | ✅ |
 | readchk.py | anthropics 20개(카탈로그) | 흐름 갈래 없음 | 판단기준 없음 1건(5스킬)만 | ✅ |
+| calibrate.py | labels.json 10쌍(저장소 5 + 바깥 5) | 전부 기대대로, 상수마다 양성·음성 사이 | 10/10. COPY_COVERAGE 1.00 vs 0.77, TXT_SAME 0.41 vs 0.24 | ✅ |
+| mutations.sh | M6 writers 중복 | 🔴 + "기록자가 2명" | exit 2, 문구 1 | ✅ |
+| 평가 1회차 (Sonnet, 스킬 있음) | 19 시나리오 82 단정문 | 통과율과 떨어진 자리 | 75/82 (0.91). 떨어짐: askflow 질문 2개, intake 혼합 2, planfiles 물러남 뒤 갱신 없음, weave 갈림길 오판 2, weave 동명이인에 skillmerge 재제안 | ⚠️ |
+| 평가 1회차 (Sonnet, 스킬 없음) | 핵심 3스킬 10 시나리오 45 단정문 | 스킬 있음보다 낮게 | 28/45 (0.62). 승인 없이 파일 변경 2건, 확인표·(없음) 없음, weave·askflow로 안 넘김 | ✅ |
+| 평가 2회차 (규칙 고친 뒤 재실행) | intake-혼합 · mergechk-주입 · skillmerge-승인합침 · weave-체인 | 고친 자리가 통과 | 3/6 · 4/4 · 5/7 · 4/4. weave 2→4, mergechk 중복 문구 확인, skillmerge 보류 사항 보존됐으나 대조표 없음·next 갈림길, intake는 다른 자리에서 떨어짐 | ⚠️ |
+| 평가 3회차 (skillmerge `next` 규칙 뒤) | skillmerge-승인합침 | 7/7 | 7/7. 대조표 있음, next는 남길 스킬 값 유지 + 팀 결정으로 보고 | ✅ |
+
+## Session 2026-09-04 (3)
+
+### Phase 9: 평가 · 상수 근거 · 채점에서 찾은 결함 수정 ✅
+
+- 평가 19개 작성(skill-creator 서식), Sonnet 서브에이전트 33회 실행(스킬 있음 23, 없음 10), 채점자 서브에이전트 23회
+- 상수 재도출: `check/labels.json` · `check/calibrate.py`, `COPY_COVERAGE` 규칙 교체, `examples/homonym/` 추가
+- 채점에서 찾은 결함 수정: 계약 파서 writers 중복(변이 M6), skillmerge 대조표·`next` 규칙, weave 미결 규칙, intake 인터뷰 항목 규칙
+- 생성·수정: `skills/*/*/evals/`, `check/calibrate.py`, `check/labels.json`, `examples/homonym/`, `check/_common.py`, `check/check_contract.py`, `check/mutations.sh`, `check/similarity.py`, `scripts/validate-skills.sh`, `.github/workflows/ci.yml`, `docs/check-criteria.md`, `README.md`, `CLAUDE.md`, 스킬 4개
 
 ## Error Log
 
@@ -71,8 +86,8 @@
 
 | Question | Answer |
 | --- | --- |
-| 1. 현재 어느 단계인가? | Phase 7 완료, PR #1에 다섯 번째 커밋(H2) |
-| 2. 다음에 할 일은? | 실측 3: 실제 팀 폴더에 intake → askflow (사람이 답할 인터뷰 필요) |
+| 1. 현재 어느 단계인가? | Phase 9 완료, PR #1에 여덟 번째 커밋(평가·상수 근거) |
+| 2. 다음에 할 일은? | 실측 3: 실제 팀 폴더에 intake → askflow (사람이 답할 인터뷰 필요). LICENSE 파일은 사용자 결정. 평가 단정문에서 가르지 못하는 것 걸러내기 |
 | 3. 목표는? | tasks.md의 Goal |
 | 4. 지금까지 배운 것? | findings.md의 Learnings |
 | 5. 완료한 작업은? | 위 세션 기록 |

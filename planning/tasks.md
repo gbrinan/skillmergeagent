@@ -52,7 +52,7 @@
 - [x] `check/flow_labels.json`: superpowers 11간선 이름표. 맞음 11 · 더 잡음 0 · 놓침 0
 - [x] `examples/prose/`: next 없이 본문에만 순서가 적힌 다섯 스킬. CI 검사
 - [x] intake(확인표 C를 추정으로 채움) · askflow(통째 확인, 없는 스킬은 하나씩) · weave(확인된 것만 chain)
-- [ ] 평가 2개(intake 4, weave 4) 실행. 아직 안 돌림
+- [x] 평가 2개(intake 4, weave 4) 실행. 5/5 · 5/5. 채점자 지적: `examples/prose/README.md`가 정답을 적어 두어 단정문 3개가 본문을 안 읽어도 만족된다. 고정 자료의 README는 검사 명세이지 평가 입력이 아니어야 한다
 - [ ] 실측 3: 실제 팀 폴더. 이제 인터뷰가 "설계해 주세요"가 아니라 "이 순서 맞습니까"로 시작한다
 
 ### Phase 4: 예시와 검증 ✅

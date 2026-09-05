@@ -34,7 +34,8 @@ TARGET_SHAPES = [
     re.compile(r"([가-힣][\w가-힣-]{1,}?)(?:으로|로)\s+(?:넘긴|넘겨|보낸|이어)"),  # 비탐욕: "견적발송으로"에서 "견적발송". 두 글자는 아래서 거른다
     re.compile(r"([가-힣][\w가-힣-]{2,}) 스킬(?:을|로|이|은)"),
     re.compile(r"(?:use|invoke) (?:the )?[`'\"]?([A-Za-z][\w-]{2,})[`'\"]? skill", re.I),
-    re.compile(r"(?<![\w/])[a-z][\w-]*:([a-z][\w-]{2,})"),
+    # 팩 접두어 "superpowers:X". 접두어는 4자 이상. XML 이름공간(w:author, a:buChar, p:sldIdLst)이 여기 걸렸다(.claude 실측)
+    re.compile(r"(?<![\w/<`])[a-z][\w-]{3,}:([a-z][\w-]{2,})(?![\w-]*[>`])"),
 ]
 KO_STOP = {"해당", "모든", "다른", "이전", "이후", "각각", "다음", "위의", "아래"}
 EXAMPLE_LIST = re.compile(r"(examples?|e\.g\.|such as|good:|bad:|✅|❌|예:|예시|같은 스킬|와 달리|처럼)", re.I)  # 나열·서식 예시는 관계가 아니다
@@ -108,6 +109,7 @@ def missing_targets(skills):
         for line in re.sub(r"```.*?```", " ", s["text"], flags=re.S).splitlines():
             if EXAMPLE_LIST.search(line):
                 continue
+            line = re.sub(r"`[^`]*`|<[^>]*>", " ", line)  # 코드 조각·태그 안의 이름은 스킬이 아니다
             for shape in TARGET_SHAPES:
                 for m in shape.finditer(line):
                     t = m.group(1)

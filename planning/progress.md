@@ -66,6 +66,7 @@
 | flow.py | examples/prose 5개 | 순서 2 · 하위스킬 1 · 고아 1 · 없는 스킬 1 · 나열은 언급 | 그대로 | ✅ |
 | flow.py --labels | superpowers 14개, 이름표 11간선 | 놓침 0 | 맞음 11 · 더 잡음 0 · 놓침 0 | ✅ |
 | flow.py | anthropics 20개 | 간선 0 (카탈로그) | 0 | ✅ |
+| flow.py · similarity · readchk (실측 3a) | 사용자 .claude/skills 11개 + /mnt/skills 41개 | 오탐 없이 판정 | 카탈로그, 합침 0, 바이트 동일 복사본 7, flow 오탐 17건 → 0 | ⚠️ |
 | 평가 4회차 (Sonnet) | intake-prose · weave-확인간선만 | 추정 간선에 근거 문장, 확인된 것만 chain | 5/5 · 5/5. 채점자: prose README가 정답을 주어 단정문 3개가 가르지 못함, weave의 계약에 writers 없는 표 하나(단정문 없음) | ⚠️ |
 
 ## Session 2026-09-04 (3)

@@ -53,7 +53,8 @@
 - [x] `examples/prose/`: next 없이 본문에만 순서가 적힌 다섯 스킬. CI 검사
 - [x] intake(확인표 C를 추정으로 채움) · askflow(통째 확인, 없는 스킬은 하나씩) · weave(확인된 것만 chain)
 - [x] 평가 2개(intake 4, weave 4) 실행. 5/5 · 5/5. 채점자 지적: `examples/prose/README.md`가 정답을 적어 두어 단정문 3개가 본문을 안 읽어도 만족된다. 고정 자료의 README는 검사 명세이지 평가 입력이 아니어야 한다
-- [ ] 실측 3: 실제 팀 폴더. 이제 인터뷰가 "설계해 주세요"가 아니라 "이 순서 맞습니까"로 시작한다
+- [x] 실측 3a (읽기 전용): 사용자의 실제 `.claude/skills` 11개. 합침 후보 0, 간선 0(카탈로그), 번들 `/mnt/skills`와 바이트 동일한 복사본 7개 발견, `flow.py` 오탐 1건(XML 이름공간 `w:author`를 팩 접두어로) 수정
+- [ ] 실측 3b: 인터뷰. 복사본 7개를 어떻게 할지, `session-start-hook`의 name 불일치는 사용자 결정
 
 ### Phase 4: 예시와 검증 ✅
 
@@ -126,6 +127,7 @@
 | 키워드 겹침 0.8 규칙이 NVIDIA physical-ai 두 DAG(같은 틀, 다른 일)를 동일로 분류 | 1 | 문장 덮임 0.9로 교체, labels.json에 음성으로 고정 |
 | `validate-skills.sh`가 `evals/files/` 안의 고정 자료 SKILL.md를 카탈로그 스킬로 검사 | 1 | `-not -path '*/evals/*'`, `find_skills`도 evals/ 제외 |
 | 평가 실행 서브에이전트 동시 20개 제한으로 baseline 5개 미실행 | 1 | 자리가 나면 다시 띄움 |
+| `flow.py`가 docx·pptx 본문의 XML 이름공간(`w:author`, `a:buChar`, `p:sldIdLst`) 17개를 "불려도 폴더에 없는 스킬"로 냄 | 1 | 팩 접두어 4자 이상, 코드 조각·태그 안은 제외 |
 
 ## Notes
 

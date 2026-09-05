@@ -82,7 +82,7 @@ npx skills@latest add gbrinan/skillmergeagent --global --agent '*'
 ```text
 들어오는 것: 팀원들이 각자 만든 SKILL.md · 프롬프트 · 설계도 · 체크리스트 (형식 제각각)
       │
-      ├─ intake      전부 읽고 → 스킬 카드 인벤토리 + 확인표 A(구성)·B(판단기준)·C(순서) → "이대로 맞습니까?"
+      ├─ intake      전부 읽고 → 스킬 카드 인벤토리 + 확인표 A(구성)·B(판단기준)·C(순서, next가 없으면 check/flow.py로 본문에서 추정) → "이대로 맞습니까?"
       │
       ├─ askflow     확인표 통째 확인 → (없음) 칸만 한 질문씩 → agent-plan.md(SSOT) + CONTRACT.md
       │
@@ -138,6 +138,7 @@ npx skills@latest add gbrinan/skillmergeagent --global --agent '*'
 python3 check/similarity.py <폴더> [<폴더>...]        # 통폐합·체인 후보 (읽기 전용)
 python3 check/check_evals.py                         # 스킬마다 평가 3개 이상, 입력 파일 존재
 python3 check/calibrate.py                           # 유사도 임계값이 이름표 쌍(check/labels.json)을 여전히 가르는가
+python3 check/flow.py <폴더>                          # next가 없어도 본문에서 순서·하위스킬 간선을 근거 문장과 함께 뽑는다 (추정)
 python3 check/readchk.py <팩>                          # 읽은 바 + 미결 → DECISIONS.md
 python3 check/check_contract.py <팩> --run-check       # 계약 게이트 → 통과 시 L1~L4 점검
 python3 check/run_check.py --self                      # 이 저장소 자신: README 구조도 ↔ 실제 폴더
@@ -174,7 +175,7 @@ skillmergeagent/
 ├── check/               ← 유사도 감사 · readchk · 계약 게이트 · 통합 점검기
 ├── scripts/             ← 스킬 카탈로그 검증
 ├── docs/                ← 점검 기준
-├── examples/            ← before/ (통폐합 전, 팀원 3명의 날것) · after/ (합치고 엮어 점검 통과한 팩) · shared/ (다른 일인데 같은 문단을 든 두 스킬) · homonym/ (입출력은 같고 판단기준이 다른 두 스킬)
+├── examples/            ← before/ (통폐합 전, 팀원 3명의 날것) · after/ (합치고 엮어 점검 통과한 팩) · shared/ (다른 일인데 같은 문단을 든 두 스킬) · homonym/ (입출력은 같고 판단기준이 다른 두 스킬) · prose/ (next 없이 본문에만 순서가 적힌 다섯 스킬)
 └── planning/            ← 이 저장소 자신의 tasks · findings · progress (스킬로 스킬을 만든 기록)
 ```
 

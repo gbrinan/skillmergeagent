@@ -75,7 +75,7 @@ user-invoked로 둘 후보가 있었다면 `skillmerge`다. 통폐합 반사가 
 1. **SKILL.md**가 위 서식을 따른다. `name`이 폴더와 같다.
 2. **README** 색인에 사분면·호출·읽기 전용 열과 링크가 있고, **plugin.json**에 경로가 등록돼 있다. `scripts/validate-skills.sh`가 둘 다 확인한다.
 3. **README 구조도**가 실재하는 최상위 폴더를 전부 안내한다. `python3 check/run_check.py --self`.
-4. **예시가 통과한다.** `python3 check/similarity.py examples/before`가 합침 후보를 내고, `examples/homonym`은 동명이인으로 남고, `python3 check/check_contract.py examples/after --run-check`가 0으로 끝나고, `readchk.py examples/after`가 `DECISIONS.md`를 바꾸지 않는다. `bash check/mutations.sh` · `python3 check/check_spec_sync.py` · `python3 check/calibrate.py`도 통과한다.
+4. **예시가 통과한다.** `python3 check/similarity.py examples/before`가 합침 후보를 내고, `examples/homonym`은 동명이인으로 남고, `python3 check/check_contract.py examples/after --run-check`가 0으로 끝나고, `readchk.py examples/after`가 `DECISIONS.md`를 바꾸지 않는다. `bash check/mutations.sh` · `python3 check/check_spec_sync.py` · `python3 check/calibrate.py`도 통과한다. `python3 check/flow.py examples/prose`가 순서 2 · 하위스킬 1 · 고아 1 · 없는 스킬 1을 낸다.
 5. **상수에는 근거가 있다.** `similarity.py`의 임계값은 `check/labels.json`의 이름표 쌍이 가르는 값이다. 상수를 바꾸려면 먼저 반대 사례를 이름표에 더하고 `calibrate.py`가 보고하는 여유를 본다.
 6. **스킬마다 평가가 있다.** `skills/<사분면>/<이름>/evals/evals.json`에 시나리오 3개 이상. 스킬 지시문을 고치면 그 시나리오를 다시 돌려 `planning/progress.md`에 적는다.
 5. **회사 고유 명사가 없다.** `skills/`·`templates/`·`check/`·`docs/`에 회사 이름·세션 번호·브랜드 색이 없다.

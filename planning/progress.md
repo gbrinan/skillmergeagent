@@ -63,6 +63,9 @@
 | 평가 1회차 (Sonnet, 스킬 없음) | 핵심 3스킬 10 시나리오 45 단정문 | 스킬 있음보다 낮게 | 28/45 (0.62). 승인 없이 파일 변경 2건, 확인표·(없음) 없음, weave·askflow로 안 넘김 | ✅ |
 | 평가 2회차 (규칙 고친 뒤 재실행) | intake-혼합 · mergechk-주입 · skillmerge-승인합침 · weave-체인 | 고친 자리가 통과 | 3/6 · 4/4 · 5/7 · 4/4. weave 2→4, mergechk 중복 문구 확인, skillmerge 보류 사항 보존됐으나 대조표 없음·next 갈림길, intake는 다른 자리에서 떨어짐 | ⚠️ |
 | 평가 3회차 (skillmerge `next` 규칙 뒤) | skillmerge-승인합침 | 7/7 | 7/7. 대조표 있음, next는 남길 스킬 값 유지 + 팀 결정으로 보고 | ✅ |
+| flow.py | examples/prose 5개 | 순서 2 · 하위스킬 1 · 고아 1 · 없는 스킬 1 · 나열은 언급 | 그대로 | ✅ |
+| flow.py --labels | superpowers 14개, 이름표 11간선 | 놓침 0 | 맞음 11 · 더 잡음 0 · 놓침 0 | ✅ |
+| flow.py | anthropics 20개 | 간선 0 (카탈로그) | 0 | ✅ |
 
 ## Session 2026-09-04 (3)
 
@@ -72,6 +75,13 @@
 - 상수 재도출: `check/labels.json` · `check/calibrate.py`, `COPY_COVERAGE` 규칙 교체, `examples/homonym/` 추가
 - 채점에서 찾은 결함 수정: 계약 파서 writers 중복(변이 M6), skillmerge 대조표·`next` 규칙, weave 미결 규칙, intake 인터뷰 항목 규칙
 - 생성·수정: `skills/*/*/evals/`, `check/calibrate.py`, `check/labels.json`, `examples/homonym/`, `check/_common.py`, `check/check_contract.py`, `check/mutations.sh`, `check/similarity.py`, `scripts/validate-skills.sh`, `.github/workflows/ci.yml`, `docs/check-criteria.md`, `README.md`, `CLAUDE.md`, 스킬 4개
+
+## Session 2026-09-05
+
+### Phase 10: 흐름 추정 ✅
+
+- 신호 측정(4개 리포) → `check/flow.py` → `check/flow_labels.json`(superpowers 11간선 11/11) → `examples/prose/` → intake·askflow·weave 지시문 → CI · 문서 · 평가 2개 추가(미실행)
+- 생성·수정: `check/flow.py`, `check/flow_labels.json`, `examples/prose/`, 스킬 3개, 평가 2개, `docs/check-criteria.md`, `README.md`, `CLAUDE.md`, `.github/workflows/ci.yml`, `planning/`
 
 ## Error Log
 
@@ -86,8 +96,8 @@
 
 | Question | Answer |
 | --- | --- |
-| 1. 현재 어느 단계인가? | Phase 9 완료, PR #1에 여덟 번째 커밋(평가·상수 근거) |
-| 2. 다음에 할 일은? | 실측 3: 실제 팀 폴더에 intake → askflow (사람이 답할 인터뷰 필요). LICENSE 파일은 사용자 결정. 평가 단정문에서 가르지 못하는 것 걸러내기 |
+| 1. 현재 어느 단계인가? | Phase 10 완료, PR #1에 열 번째 커밋(흐름 추정) |
+| 2. 다음에 할 일은? | 실측 3: 실제 팀 폴더에 intake(flow.py 포함) → askflow. 이제 첫 질문이 '이 순서 맞습니까'다. 새 평가 2개(intake 4, weave 4) 실행. LICENSE는 사용자 결정 |
 | 3. 목표는? | tasks.md의 Goal |
 | 4. 지금까지 배운 것? | findings.md의 Learnings |
 | 5. 완료한 작업은? | 위 세션 기록 |

@@ -114,6 +114,23 @@ L4는 끝점만 보므로 통과시킨다. `halt_at: 중간판단스킬, 끝스�
 
 점수 가중치(0.45·0.25·0.30)는 표 정렬에만 쓴다. 분류 규칙은 점수를 보지 않는다.
 
+## 흐름 추정 (`flow.py`)
+
+규격(`inputs`·`outputs`·`next`)이 없는 스킬 더미가 어떤 워크플로우를 만들 수 있는지 본문에서 읽는다. 공개 스킬 692개 중 `next`를 쓰는 것은 0개였고, 대신 본문이 서로를 부른다(superpowers 14개 중 7개, NVIDIA 350개 중 250개). 간선마다 근거 문장을 원문 그대로 달고, 근거 없는 간선은 만들지 않는다.
+
+| 관계 | 신호 | 체인에 드는가 |
+| --- | --- | --- |
+| 선언 | frontmatter `next` | 확정 |
+| 입출력 | `A.outputs ∩ B.inputs` | 확정 |
+| 순서 | then · after · first · 그다음 · 넘긴 · 끝나면 | 추정. 확인표 C |
+| 하위스킬 | invoke · REQUIRED SUB-SKILL · use the X skill · 호출 | 추정. 확인표 C (A 안에서 B를 부르는 한 걸음) |
+| 선행지식 | REQUIRED BACKGROUND · must understand · 먼저 알아야 | 체인 아님. 읽을 순서 |
+| 언급 | 그 밖의 이름 부름, 나열(examples · 와 달리 · ✅/❌ 서식 예) | 간선 아님. 보고만 |
+
+근거는 `check/flow_labels.json`이다. obra/superpowers 14개를 사람이 읽고 정한 기대 간선 11개를 `--labels`로 대조하면 맞음 11 · 더 잡음 0 · 놓침 0이다. 처음 판에서 틀렸던 것 둘을 그 이름표가 고정한다: 예시 나열 안의 이름을 순서로 잡던 것("Examples: TDD, verification-before-completion"), 서식 예시(`✅ Good:`) 안의 REQUIRED SUB-SKILL을 진짜 관계로 잡던 것. 저장소 안 근거는 `examples/prose/`다.
+
+추정 간선은 `intake`가 확인표 C에 `(추정)`으로 올리고, `askflow`가 통째로 확인받고, 사람이 확인한 것만 `weave`가 `chain`에 넣는다. 추정인 채로 계약에 들어간 간선은 거짓 계약이다. 알려진 한계: 순서 단어가 없는 문장의 진짜 간선은 놓친다(superpowers의 `subagent-driven-development → requesting-code-review`). "불려도 폴더에 없는 스킬"은 문장 꼴로 잡으므로 일반 명사가 섞일 수 있어 보고만 한다.
+
 ## 스킬 평가 (`skills/*/*/evals/evals.json`)
 
 스킬마다 시나리오 3개 이상이 [skill-creator](https://github.com/anthropics/skills/tree/main/skills/skill-creator)의 `evals.json` 서식(`prompt` · `files` · `expected_output` · `expectations`)으로 있다. 입력은 `examples/`와 `evals/files/`의 고정 자료다. 실행은 skill-creator의 방식 그대로: 시나리오마다 스킬을 읽은 실행과 읽지 않은 실행(baseline)을 같은 모델로 돌리고, `expectations`를 하나씩 채점해 `grading.json`으로 남긴다. 채점 결과와 배운 것은 `planning/progress.md`의 Test Results 표에 적는다. 이 평가는 기계 판정(L0~L4)이 못 보는 것, 즉 스킬 지시문을 읽은 에이전트가 실제로 멈추고 묻고 지어내지 않는지를 본다.

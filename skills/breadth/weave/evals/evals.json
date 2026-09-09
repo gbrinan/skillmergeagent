@@ -5,7 +5,7 @@
     {
       "id": 1,
       "name": "chain-with-halt-and-coverage",
-      "prompt": "합칠 건 나중에 하고, 일단 이 스킬들을 하나의 워크플로우로 엮어줘.",
+      "prompt": "합칠 건 나중에 하고, 일단 이 스킬들을 하나의 워크플로우로 엮어줘. 기획서와 계약 초안으로 정리해줘.",
       "files": [
         "examples/before",
         "templates/CONTRACT.md"
@@ -26,18 +26,18 @@
         "examples/homonym",
         "templates/CONTRACT.md"
       ],
-      "expected_output": "판단기준이 다른 두 스킬을 갈림길로 그리고 chain을 ';'로 경로를 나눠 적는다(예: 휴가신청검토 -> 결과통보; 휴가승인심사 -> 결과통보). 갈림 조건(어느 팀의 신청인가)은 파일에 없으므로 지어내지 않고 askflow에 넘긴다. next인 결과통보가 없음을 빠진 스킬로 표시한다.",
+      "expected_output": "두 스킬을 다른 판단기준으로 보존하고 분기 조건·없는 결과통보를 미결로 표시한다. 미확인 경로는 기획서 후보로만 쓰고 확정 계약으로 만들지 않는다.",
       "expectations": [
-        "chain에 ';'로 나눈 두 경로가 있다",
-        "갈림 조건을 지어내지 않고 askflow의 질문으로 넘긴다",
-        "결과통보가 폴더에 없음을 커버리지 표에 빠진 자리로 표시한다",
-        "두 스킬을 합치자고 하지 않는다"
+        "두 판단기준을 유지하며 합치지 않는다",
+        "분기 조건을 지어내지 않고 다음 질문으로 넘긴다",
+        "결과통보가 없는 능력임을 표시한다",
+        "미확인 경로를 확정 계약으로 쓰지 않는다"
       ]
     },
     {
       "id": 3,
       "name": "two-clusters-two-packs",
-      "prompt": "이 스킬들 전부 하나의 워크플로우로 묶어줘.",
+      "prompt": "이 스킬들 전부 하나의 워크플로우로 묶어줘. 실행 팩 초안으로 정리해줘.",
       "files": [
         "examples/before",
         "examples/shared",
@@ -54,9 +54,9 @@
     {
       "id": 4,
       "name": "confirmed-edges-only-into-chain",
-      "prompt": "확인표 C 봤어. 견적요청접수 → 견적산출 → 견적검토는 맞아. 견적산출이 단가표조회를 부르는 것도 맞아. 견적발송은 사람이 메일로 하는 거라 스킬은 없어. 이걸로 엮어줘.",
+      "prompt": "확인표 C 봤어. 견적요청접수 → 견적산출 → 견적검토는 맞아. 견적산출이 단가표조회를 부르는 것도 맞아. 견적발송은 사람이 메일로 하는 거라 스킬은 없어. 이걸로 엮어줘. 기획서와 계약 초안으로 정리해줘.",
       "files": [
-        "examples/prose",
+        "examples/prose/skills",
         "check/flow.py",
         "check/_common.py",
         "templates/CONTRACT.md"

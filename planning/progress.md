@@ -85,7 +85,32 @@
 - 신호 측정(4개 리포) → `check/flow.py` → `check/flow_labels.json`(superpowers 11간선 11/11) → `examples/prose/` → intake·askflow·weave 지시문 → CI · 문서 · 평가 2개 추가(미실행)
 - 생성·수정: `check/flow.py`, `check/flow_labels.json`, `examples/prose/`, 스킬 3개, 평가 2개, `docs/check-criteria.md`, `README.md`, `CLAUDE.md`, `.github/workflows/ci.yml`, `planning/`
 
-## Error Log
+## Session 2026-09-09
+
+### Phase 11: 정보가 부족해도 문답으로 설계
+
+- 기준: 08d0469696691d5b4a5c9c5d47836d361b4f7792의 독립 로컬 clone. 원격 게시·전역 스킬 설치 없음.
+- 변경: askflow의 최소 정보·상태·질문 선택·종료 조건, intake의 무자료 진입, weave의 설계 산출과 의미 확인, mergechk의 설계/실행 팩 구분. 템플릿·README·CLAUDE·점검 기준·평가를 동기화했다. 스킬 수는 6개 유지, 버전 0.2.0.
+- 실행 검사: 스킬 카탈로그 6개, 평가 JSON 26시나리오의 서식·입력 경로, 규격 동기, README 구조, 기존 after 계약과 L1~L4 43/43, readchk 원본 무변경, 내부 보정쌍 5/5, prose 흐름·before 중복·homonym 보존 모두 exit 0.
+- 외부 보정쌍 5개는 로컬 자료가 없어 건너뛰었다. 26개 평가의 모델 실행 통과를 의미하지 않는다. 모델 기반 전체 반복 평가와 실제 사용자 업무의 전후 비교는 미실시.
+- 수동 표면 확인: 작성 에이전트가 합성 사용자 답으로 무자료 시작 → 목적 → 결과 → 추정 순서 확인 → 표 없는 완성 설계를 생성했다. 추가로 정책 충돌·답변 보류 경로를 적용했다. 실제 입출력은 docs/workflow-dialogue.md에 있으며 독립 평가로 주장하지 않는다.
+- 실행 환경: Git Bash와 번들 Python 3.12.14. validate-skills.sh의 체크아웃 CRLF는 LF로 포맷 정규화했고 의미 변경 없음.
+- 추가 회귀: 원본 M0와 변이 M1~M6의 기대 결과 전부 통과. 첫 시도는 공백 포함 TMPDIR를 기존 mutations.sh가 따옴표 없이 전달해 실패·시간초과했다. 인자가 Codex와 2/... 두 개로 나뉨을 확인했고 공백 없는 기본 임시 경로로 다시 실행해 통과했다. 테스트의 재귀 정리는 같은 Bash 안에서 임시 경로 범위를 검증하는 함수로 제한했다.
+- 첫 시도가 인접 Codex 폴더에 만든 DECISIONS.md는 생성 시각(15:47:15)과 Git 미추적 여부로 이번 실행 산출물임을 확인했다. 원본 삭제 대신 이 작업의 .re0/qa/misdirected-readchk.md로 이동해 보관했고 인접 폴더에 파일이 남지 않았음을 확인했다. 기본 권한에서는 이동이 거부돼 자동 검토를 거친 권한 확장 후 복구했다. 사용자 기존 파일은 제거하지 않았다. 잘못된 테스트 프로세스는 종료돼 남아 있지 않다.
+- 편집 도구 준비 중 저장된 원문 부재와 정확하지 않은 검색 문자열로 패치 조립이 중단됐다. 파일을 다시 읽어 일치 검증 후 적용했다. README 패치도 강조 표기의 불일치로 적용 전 거부돼 정확한 줄로 수정했다. 실패한 시도에서 부분 수정은 없었다.
+
+## Earlier Error Log
+
+### Phase 12: 생성 후 정리 훅 (2026-09-09)
+
+- 구현: scripts/post-generate.cjs. 등록 파일·세션 분리, Stop 1회 요청, 복구 사본, clean/refined/needs-input, 승인 답변 후 resume, 변경된 내용의 stale 표시. 새 외부 의존성 없음. 버전 0.3.0.
+- 규칙 정본: docs/refine-agent.md. askflow·weave에는 생성 종료점 연결만 추가. SSOT의 감사안 승인 게이트·고유 정보 보존을 적용했고, 기계 계약 필드·독립 설치 규칙은 강제 추출 대상에서 제외했다.
+- RED→GREEN: 첫 실행은 구현 부재로 4개 실패. 추가 회귀는 등록 이후 변경된 파일의 검토 기준 시점과 config 명령 부재 2개를 검출했다. 기준을 Stop 시점으로 수정하고 config를 구현했다. 최종 CLI 13/13 통과, node --check 통과.
+- 수동 표면: out/hook-qa의 합성 파일 2개를 등록하고 로컬 .codex/hooks.json의 실제 command를 Windows cmd에서 stdin Stop 이벤트로 호출했다. decision=block·정본 규칙·범위·사본 경로가 반환됨. 구현자가 중복 2문단을 기획서 참조로 바꾸고 장식 1문장을 제거했다. 고유 첨부 예외·30분/60분 충돌은 보존하고 보고서로 needs-input 기록. 후속 Stop은 경고만 반환, 추가 block 없음. 기획서·참조를 직접 읽어 확인했다. 사본과 시연 파일은 Git 제외 경로에 보존했다.
+- 자동 회귀: 스킬 카탈로그 6개(명시적 번들 Python으로 재실행 성공), 평가 JSON 6개/26시나리오 서식·경로, 규격 동기, README 구조, 기존 after 계약 GREEN 및 L1~L4 43/43, git diff --check 통과. 전체 모델 평가 실행을 뜻하지 않는다. 새 훅 테스트를 CI에 추가했다.
+- 오류/환경: 편집 직후 LSP 훅이 서버 미설치·사용자의 이전 설치 거절을 보고했다. 재설치하지 않고 Node 구문/CLI 검사로 확인했다. Git Bash MCP transport가 닫혀 native PowerShell로 전환. 아직 생성 중인 시연 폴더의 cwd 시작 실패 1회, PowerShell node -e 인용 손실 1회는 JSON 파이프+설정 command 직접 실행으로 해소했다. exec의 Bash shell override는 WSL E_ACCESSDENIED를 반환해 명시적 Git Bash 실행으로 전환했다. 카탈로그 검사 첫 실행은 WindowsApps python3 때문에 실패했다. README 자기 검사에서 새 로컬 out 폴더 미안내를 발견해 구조도에 추가했다.
+- 자체 구조 검토: 훅 상태 전이 139줄, CLI 테스트 126줄. 외부 입력은 경계에서 JSON/경로를 확인하고 파일 순회·셸 실행·삭제를 구현하지 않는다. 상태 분기는 switch로 처리하고 환경 오류는 CLI 경계에서 표시한다. 별도 로깅 체계·추상화 계층·정리용 새 스킬은 추가하지 않았다.
+- 한계: CLI 프로토콜과 수동 합성 편집을 검증했다. 현재 앱 세션의 자동 Stop 재개·독립 모델의 의미 보존·실제 사용자 승인 인터뷰·타 호스트 실행은 미검증. 로컬 프로젝트 설정만 준비했고 전역 설정·원격 저장소는 변경하지 않았다. 사용 시 실제 session_id와 호스트 신뢰/활성화가 필요하다. 상태/보고서는 작성자 진술이며 보안 강제 게이트가 아니다.
 
 | Timestamp | Error | Attempt | Resolution |
 | --- | --- | --- | --- |
@@ -98,8 +123,8 @@
 
 | Question | Answer |
 | --- | --- |
-| 1. 현재 어느 단계인가? | Phase 10 완료, PR #1에 열 번째 커밋(흐름 추정) |
-| 2. 다음에 할 일은? | 실측 3: 실제 팀 폴더에 intake(flow.py 포함) → askflow. 이제 첫 질문이 '이 순서 맞습니까'다. 새 평가 2개(intake 4, weave 4) 실행. LICENSE는 사용자 결정 |
+| 1. 현재 어느 단계인가? | Phase 12 훅 구현·CLI 검증·수동 합성 정리 시연 완료 |
+| 2. 다음에 할 일은? | 새 호스트 세션에서 로컬 hooks 신뢰/활성화와 실제 생성→자동 재개 확인. 독립 모델 평가는 별도. 원격 게시·전역 설치는 미실시; LICENSE는 기존 미결 |
 | 3. 목표는? | tasks.md의 Goal |
 | 4. 지금까지 배운 것? | findings.md의 Learnings |
 | 5. 완료한 작업은? | 위 세션 기록 |

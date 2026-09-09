@@ -6,3 +6,5 @@ REMEDIATION.md
 DECISIONS.new.md
 out/
 __pycache__/
+.skillmerge-review/
+.codex/hooks.json

@@ -1,0 +1,21 @@
+{
+  "_설명": "flow.py의 관계 신호에 근거를 대는 이름표. obra/superpowers 14개를 사람이 읽고 정한 기대 간선이다. must=true는 놓치면 실패. 자료(/home/user/ext/obra_superpowers)가 없으면 CI는 건너뛴다.",
+  "source": "/home/user/ext/obra_superpowers",
+  "edges": [
+    {"a": "using-superpowers", "b": "brainstorming", "kind": "순서", "must": true, "why": "'Let's build X' → brainstorming first"},
+    {"a": "using-superpowers", "b": "systematic-debugging", "kind": "순서", "must": true, "why": "'Fix this bug' → systematic-debugging first"},
+    {"a": "brainstorming", "b": "writing-plans", "kind": "순서", "must": true, "why": "design, written spec, then the writing-plans skill"},
+    {"a": "writing-plans", "b": "executing-plans", "kind": "하위스킬", "must": true, "why": "REQUIRED SUB-SKILL"},
+    {"a": "writing-plans", "b": "subagent-driven-development", "kind": "하위스킬", "must": true, "why": "REQUIRED SUB-SKILL"},
+    {"a": "executing-plans", "b": "finishing-a-development-branch", "kind": "하위스킬", "must": true, "why": "REQUIRED SUB-SKILL"},
+    {"a": "systematic-debugging", "b": "test-driven-development", "kind": "하위스킬", "must": true, "why": "Use the tdd skill for failing tests"},
+    {"a": "systematic-debugging", "b": "verification-before-completion", "kind": "하위스킬", "must": true, "why": "Use the skill before claiming success"},
+    {"a": "writing-skills", "b": "test-driven-development", "kind": "선행지식", "must": true, "why": "REQUIRED BACKGROUND: You MUST understand tdd before using this skill"},
+    {"a": "using-superpowers", "b": "brainstorming", "kind": "하위스킬", "must": false, "why": "invoke the brainstorming skill first. 순서와 겹치는 같은 쌍의 두 번째 근거"},
+    {"a": "brainstorming", "b": "writing-plans", "kind": "하위스킬", "must": false, "why": "invoke writing-plans skill. 순서와 겹치는 두 번째 근거"}
+  ],
+  "not_edges": [
+    {"a": "writing-skills", "b": "verification-before-completion", "why": "Examples: TDD, verification-before-completion... 나열이다"},
+    {"a": "writing-skills", "b": "systematic-debugging", "why": "서식 예시(✅ Good:) 안의 이름이다"}
+  ]
+}

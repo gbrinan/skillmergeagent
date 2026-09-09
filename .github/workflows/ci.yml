@@ -1,0 +1,46 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate the skill catalog
+        run: bash scripts/validate-skills.sh
+      - name: README structure matches folders
+        run: python3 check/run_check.py --self
+      - name: Similarity audit flags the duplicate pair (before)
+        run: python3 check/similarity.py examples/before | tee /tmp/sim.txt && grep -q "합침 후보" /tmp/sim.txt
+      - name: Similarity audit proposes shared-reference extraction, not a merge (shared)
+        run: python3 check/similarity.py examples/shared | tee /tmp/sh.txt && grep -q "참조 추출" /tmp/sh.txt && ! grep -q "동일 → 합침" /tmp/sh.txt
+      - name: Similarity audit keeps homonyms apart (homonym)
+        run: python3 check/similarity.py examples/homonym | tee /tmp/hm.txt && grep -q "동명이인" /tmp/hm.txt && ! grep -q "합침 후보 [1-9]" /tmp/hm.txt
+      - name: Flow inference reads the chain out of prose (prose)
+        run: |
+          python3 check/flow.py examples/prose | tee /tmp/flow.txt
+          grep -q "순서 (추정) | 견적요청접수 | 견적산출" /tmp/flow.txt
+          grep -q "순서 (추정) | 견적산출 | 견적검토" /tmp/flow.txt
+          grep -q "하위스킬 (추정) | 견적산출 | 단가표조회" /tmp/flow.txt
+          grep -q "고아(어디에도 안 붙음): 고객만족조사" /tmp/flow.txt
+          grep -q "불려도 폴더에 없는 스킬: 견적발송" /tmp/flow.txt
+          ! grep -qE "^\| (순서|하위스킬)[^|]*\| 고객만족조사" /tmp/flow.txt
+      - name: Similarity thresholds still separate the labeled pairs
+        run: python3 check/calibrate.py
+      - name: Skill evals exist and parse (3+ scenarios per skill)
+        run: python3 check/check_evals.py
+      - name: Contract gate and integration check pass (after)
+        run: python3 check/check_contract.py examples/after --run-check
+      - name: readchk leaves no undecided fork (after)
+        run: python3 check/readchk.py examples/after && git diff --exit-code -- examples/after/DECISIONS.md
+      - name: Mutation regression (what the checker catches, and its known limit)
+        run: bash check/mutations.sh
+      - name: Pack-spec drift guard
+        run: python3 check/check_spec_sync.py

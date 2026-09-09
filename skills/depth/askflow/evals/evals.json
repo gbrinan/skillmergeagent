@@ -1,0 +1,48 @@
+{
+  "skill_name": "askflow",
+  "files_root": "저장소 루트 기준 경로",
+  "note": "인터뷰 스킬이라 사람의 답이 필요하다. 1은 첫 턴(확인표와 첫 질문), 2·3은 프롬프트에 사용자의 답을 미리 넣어 산출물까지 본다.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "confirm-known-ask-one",
+      "prompt": "이 스킬들로 워크플로우 만들 거야. 인터뷰 시작하자.",
+      "files": ["examples/before", "templates/agent-plan.md", "templates/CONTRACT.md"],
+      "expected_output": "파일에서 아는 것(스킬 5개, 입출력, 표, next)은 확인표 A·B·C로 통째 보여 주고 '맞습니까'로 확인한다. 질문은 (없음)인 칸에만, 한 번에 하나만 한다. 파일에 이미 있는 것(예: 회의록요약의 판단기준)을 묻지 않는다.",
+      "expectations": [
+        "확인표 A·B·C를 먼저 보여 주고 통째로 확인을 구한다",
+        "열린 질문이 정확히 하나만 있다",
+        "그 질문이 (없음)이거나 파일에 없는 것(예: 표의 칸 정의, 임계값, 담당자 중복 결정)을 겨냥한다",
+        "파일에 이미 적힌 값을 다시 묻지 않는다"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "answers-given-produce-plan-and-contract",
+      "prompt": "확인표는 전부 맞아. 답: 회의록요약과 미팅노트정리는 합칠 거고 이름은 회의록요약. 액션아이템.csv 기록자는 액션아이템추출, 주간안건.csv 기록자는 안건정리. 표 칸은 회의록목록.csv(파일명, 일자, 주제) · 액션아이템.csv(담당, 내용, 기한) · 주간안건.csv(안건, 출처, 우선순위). 임계값 없음. 안건확정은 팀장이 직접 한다. 이걸로 기획서랑 계약 써줘.",
+      "files": ["examples/before", "templates/agent-plan.md", "templates/CONTRACT.md"],
+      "expected_output": "agent-plan.md 8절(하지 않는 일, 연동 맵 포함)과 CONTRACT.md의 contract 블록(tables·writers·chain·payloads·threshold·halt_at). 표당 기록자 하나, halt_at에 안건확정. 동작 테스트 체크리스트에 오류 주입 항목이 있다. 답에 없는 것은 (미확인)으로 남긴다.",
+      "expectations": [
+        "CONTRACT.md의 contract 블록에 tables·writers·chain·payloads·threshold·halt_at 여섯 키가 모두 있다",
+        "writers에 표마다 기록자가 하나씩이고 답에 준 대로다",
+        "halt_at에 안건확정이 있다",
+        "agent-plan.md에 '하지 않는 일'과 연동 맵이 비어 있지 않다",
+        "동작 테스트 체크리스트에 오류 주입 항목이 있다",
+        "사용자 답에 없는 값을 지어내지 않고 (미확인)으로 남긴 항목을 보고한다"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "user-defers-data-definition",
+      "prompt": "확인표 맞아. 근데 표 칸 정의는 지금 못 정해. 나머지는 알아서 초안 잡아줘.",
+      "files": ["examples/before", "templates/agent-plan.md", "templates/CONTRACT.md"],
+      "expected_output": "표 칸 정의를 지어내지 않고 tables를 (미확인)으로 둔 채 나머지(chain, payloads, halt_at)를 채운 초안을 낸다. (미확인) 목록을 명시적으로 보고하고, 이것이 계약 게이트에서 어떤 결과(미결)로 나타날지 말한다.",
+      "expectations": [
+        "tables의 칸 정의를 지어내지 않고 (미확인)으로 표시한다",
+        "chain·payloads·halt_at은 파일에서 확인된 것으로 채운다",
+        "(미확인)으로 남긴 항목 목록을 보고한다",
+        "'알아서'라는 말을 근거 없는 값 채우기의 허가로 해석하지 않는다"
+      ]
+    }
+  ]
+}

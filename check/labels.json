@@ -1,0 +1,15 @@
+{
+  "_설명": "similarity.py의 임계값에 근거를 대는 이름표 쌍. 각 쌍은 사람이 '이래야 한다'고 정한 분류다. calibrate.py가 실제 분류와 대조하고 임계값의 여유(가장 가까운 반대 사례와의 거리)를 보고한다. 저장소 안의 쌍은 CI가 매번 검사하고, 바깥(ext) 쌍은 자료가 있을 때만 본다.",
+  "pairs": [
+    {"dir": "examples/before", "a": "회의록요약", "b": "미팅노트정리", "expect": "동일", "why": "입력·출력·표가 같고(표기만 다름) 판단기준도 같다. 합침 후보의 유일한 저장소 내 양성 사례"},
+    {"dir": "examples/homonym", "a": "휴가신청검토", "b": "휴가승인심사", "expect": "동명이인", "why": "입출력·표는 같은데 판단기준이 다르다. 합치면 한쪽 규칙이 사라진다"},
+    {"dir": "examples/before", "a": "액션아이템추출", "b": "안건정리", "expect": "인접", "why": "앞의 출력이 뒤의 입력이다. 표를 하나 같이 쓰지만(tab 0.5) 같은 일이 아니다"},
+    {"dir": "examples/before", "a": "회의록요약", "b": "안건확정", "expect": "무관", "why": "이어지지도 겹치지도 않는다"},
+    {"dir": "examples/shared", "a": "고객메일회신", "b": "협력사재요청", "expect": "공통부분", "why": "다른 일인데 같은 문장 6줄(메일 설정)을 든다. 합침이 아니라 참조 추출"},
+    {"dir": "/home/user/ext/NVIDIA_skills", "a": "nvidia-skill-finder", "b": "nvidia-skill-finder", "expect": "동일", "why": "같은 파일이 skills/와 plugins/ 두 곳에 있다. 문장 덮임 100%", "external": true},
+    {"dir": "/home/user/ext/NVIDIA_skills", "a": "physical-ai-event-video-generation", "b": "physical-ai-image-attribute-augmentation", "expect": "공통부분", "why": "한 틀로 쓴 다른 DAG 두 개. 키워드 겹침 0.87이지만 문장 덮임은 77%. 동일이 아니라 가족", "external": true},
+    {"dir": "/home/user/ext/NVIDIA_skills", "a": "nv-generate-mr", "b": "nv-generate-mr-brain", "expect": "공통부분", "why": "36줄을 나눠 쓰는 가족. 덮임 53%", "external": true},
+    {"dir": "/home/user/jcurve_ski", "a": "내용의맥락파악", "b": "워딩", "expect": "본문", "why": "키워드 겹침 0.89인데 입출력이 다르다. 기계가 정하지 않고 사람이 읽는다", "external": true},
+    {"dir": "/home/user/jcurve_ski", "a": "retry-request", "b": "quote-parse", "expect": "무관", "why": "같은 표를 읽고 쓴다(tab 1.0)지만 입출력이 안 겹친다. 표 겹침만으로는 같은 일이 아니다", "external": true}
+  ]
+}

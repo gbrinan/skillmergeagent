@@ -1,0 +1,8 @@
+# 지역 출처 기록 — 출하하지 않는다
+.re0/
+*.local.md
+# 점검기가 팩 안에 만드는 임시 산출물
+REMEDIATION.md
+DECISIONS.new.md
+out/
+__pycache__/

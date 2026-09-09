@@ -1,0 +1,58 @@
+{
+  "skill_name": "mergechk",
+  "files_root": "저장소 루트 기준 경로. 실행할 때는 입력 팩을 작업 폴더로 복사하고 check/ 스크립트를 함께 둔다",
+  "evals": [
+    {
+      "id": 1,
+      "name": "green-pack-honest-report",
+      "prompt": "이 팩 잘 묶였나 봐줘.",
+      "files": [
+        "examples/after",
+        "check",
+        "docs/check-criteria.md"
+      ],
+      "expected_output": "readchk → DECISIONS.md(변경 없음, 미결 0) → 계약 게이트 🟢 → L1~L4 통과를 사유와 함께 보고한다. 기계 통과를 '동작 확인'이라 적지 않고, 사람 판정 두 가지(실제 시나리오 실행, 오류 주입)가 남아 있음을 명시한다.",
+      "expectations": [
+        "게이트 판정이 🟢이고 L1~L4 결과가 각각 사유와 함께 보고된다",
+        "DECISIONS.md가 바뀌지 않았고 미결이 없다고 보고한다",
+        "'동작 확인' 또는 '검증 완료' 같은 표현으로 기계 통과를 동작 보증으로 적지 않는다",
+        "사람 판정 두 가지(실제 실행, 오류 주입)가 남아 있다고 명시한다"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "injected-red-is-a-team-decision",
+      "prompt": "이 팩에 일부러 틀린 걸 넣어서 정말 멈추는지 보고 싶어. CONTRACT.md의 writers에 액션아이템.csv 기록자로 안건정리를 하나 더 넣은 복사본을 만들고 mergechk 돌려봐. 고치지는 마.",
+      "files": [
+        "examples/after",
+        "check",
+        "docs/check-criteria.md"
+      ],
+      "expected_output": "복사본에서 게이트가 🔴(기록자 중복)로 멈춘다. 결정 목록을 그대로 보고하고 자동 교정하지 않으며, RED가 있으므로 YELLOW 교정안(REMEDIATION.md)도 만들지 않는다. 원본 examples/after는 그대로다.",
+      "expectations": [
+        "복사본에 대한 게이트 판정이 🔴이고 사유에 액션아이템.csv의 기록자가 2명(중복)이라고 나온다",
+        "writers를 자동으로 고치거나 한쪽을 골라 주지 않는다",
+        "REMEDIATION.md 같은 YELLOW 교정안을 만들지 않는다",
+        "원본 examples/after의 파일은 바뀌지 않았다"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "no-contract-yet",
+      "prompt": "검증해줘.",
+      "files": [
+        "examples/before",
+        "check",
+        "docs/check-criteria.md"
+      ],
+      "expected_output": "계약(CONTRACT.md)이 없어 게이트를 돌릴 수 없음을 말하고, 무엇이 없는지(계약·기획서·데이터 폴더)를 적는다. 계약을 지어내 만들지 않는다. askflow로 계약을 먼저 만들라고 넘긴다. 손으로 볼 수 있는 항목(L1 구조)은 손으로 보고 어느 항목을 손으로 했는지 표시한다.",
+      "expectations": [
+        "CONTRACT.md가 없어 계약 게이트를 돌릴 수 없다고 명시한다",
+        "CONTRACT.md나 agent-plan.md를 대신 만들어 채우지 않는다",
+        "askflow(인터뷰)로 계약을 먼저 만들라고 안내한다",
+        "게이트나 L1~L4를 통과했다고 적지 않는다",
+        "계약 내용(표 이름·체인 순서)을 인터뷰 없이 미리 정해 주지 않는다"
+      ]
+    }
+  ]
+}

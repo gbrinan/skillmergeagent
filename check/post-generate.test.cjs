@@ -125,3 +125,19 @@ test('Given a symlink escaping scope, when registering, then it is rejected', t 
   fs.symlinkSync(outside, path.join(root, 'linked'), 'junction');
   assert.equal(run(root, ['arm', 'test-session', 'linked/agent-plan.md']).code, 1);
 });
+test('Given snapshot I/O failure, when explicitly retried, then review can start once', t => {
+  const root = fixture(t);
+  run(root, ['arm', 'test-session', 'agent-plan.md']);
+  const bootstrap = "const fs=require('node:fs');fs.copyFileSync=()=>{throw new Error('injected snapshot I/O failure')};process.argv=[process.execPath,process.argv[1],'stop'];require(process.argv[1]);";
+  const failure = spawnSync(process.execPath, ['-e', bootstrap, script], {
+    cwd: root, input: JSON.stringify({ hook_event_name: 'Stop', session_id: 'test-session', cwd: root }),
+    encoding: 'utf8', windowsHide: true, timeout: 5000,
+  });
+  assert.equal(failure.status, 1);
+  assert.equal(JSON.parse(run(root, ['status', 'test-session']).output).phase, 'failed');
+  assert.equal(JSON.parse(stop(root).output).decision, undefined);
+  assert.equal(run(root, ['retry', 'test-session']).code, 0);
+  assert.equal(JSON.parse(stop(root).output).decision, 'block');
+  assert.equal(run(root, ['retry', 'test-session']).code, 1);
+  assert.equal(JSON.parse(stop(root, true).output).decision, undefined);
+});

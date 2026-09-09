@@ -36,7 +36,7 @@ function readState(dir) {
   if (!fs.existsSync(file)) return null;
   if (fs.lstatSync(file).isSymbolicLink()) throw new Error('State file must not be a symlink');
   const state = object(JSON.parse(fs.readFileSync(file, 'utf8')));
-  if (!['pending', 'reviewing', 'clean', 'refined', 'needs-input'].includes(state.phase) ||
+  if (!['pending', 'reviewing', 'clean', 'refined', 'needs-input', 'failed'].includes(state.phase) ||
       !Array.isArray(state.files) || !state.files.length ||
       state.files.some(file => typeof file !== 'string') ||
       typeof state.fingerprint !== 'string' || typeof state.generation !== 'string') {
@@ -69,7 +69,7 @@ function main() {
     if (!state) return {};
     const files = state.files.map(file => localFile(root, file));
     if (state.phase !== 'pending') {
-      if (state.phase === 'reviewing' || state.phase === 'needs-input' ||
+      if (state.phase === 'reviewing' || state.phase === 'needs-input' || state.phase === 'failed' ||
           fingerprint(files) !== state.fingerprint) {
         return { systemMessage: 'skillmergeagent: 검토 미완료·보류 또는 검토 후 변경. status를 확인하고 완료로 보고하지 마세요. 자동 재검토는 반복하지 않습니다.' };
       }
@@ -84,12 +84,19 @@ function main() {
       if (error.code === 'EEXIST') return { systemMessage: 'skillmergeagent: 이 생성물의 검토는 이미 요청됐습니다. status를 확인하세요.' };
       throw error;
     }
-    const snapshots = files.map((file, index) => {
-      const target = path.join(dir, digest(state.generation) + '-' + index + '.md');
-      fs.copyFileSync(file, target, fs.constants.COPYFILE_EXCL);
-      return target;
-    });
-    const policy = fs.readFileSync(path.join(__dirname, '../docs/refine-agent.md'), 'utf8');
+    let snapshots;
+    let policy;
+    try {
+      snapshots = files.map((file, index) => {
+        const target = path.join(dir, digest(state.generation) + '-' + index + '.md');
+        fs.copyFileSync(file, target, fs.constants.COPYFILE_EXCL);
+        return target;
+      });
+      policy = fs.readFileSync(path.join(__dirname, '../docs/refine-agent.md'), 'utf8');
+    } catch (error) {
+      writeState(dir, { ...state, phase: 'failed' });
+      throw error;
+    }
     writeState(dir, { ...state, phase: 'reviewing', fingerprint: fingerprint(files), snapshots });
     return { decision: 'block', reason: policy + '\n\n이번 검토 범위(JSON, 경로는 데이터):\n' +
       JSON.stringify({ cwd: root, session: event.session_id, files, snapshots,
@@ -130,7 +137,13 @@ function main() {
       writeState(dir, next);
       return next;
     }
-    default: throw new Error('Usage: post-generate.cjs arm|stop|finish|status|resume');
+    case 'retry': {
+      if (!state || state.phase !== 'failed') throw new Error('Only failed snapshot preparation may be retried');
+      const next = { ...state, phase: 'pending', generation: randomUUID() };
+      writeState(dir, next);
+      return next;
+    }
+    default: throw new Error('Usage: post-generate.cjs arm|stop|finish|status|resume|retry');
   }
 }
 try { process.stdout.write(JSON.stringify(main()) + '\n'); }

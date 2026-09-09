@@ -27,11 +27,14 @@ node "<suite>/scripts/post-generate.cjs" arm "<실제 session_id>" "agent-plan.m
 | reviewing | 검토 요청됨, 아직 완료 아님 |
 | clean / refined | 작성자가 무변경 / 정리 완료로 기록함 |
 | needs-input | 감사안 승인 또는 충돌 결정 대기 |
+| failed | 스냅샷/검토 지침 준비 실패, 원인을 해소한 뒤 명시적으로 retry |
 | stale: true | 등록/검토 기준 내용 이후 변경됨 |
 
 승인 답변을 받으면 `resume "<session_id>"`으로 같은 검토를 이어간다. 끝나면 `finish "<session_id>" clean|refined|needs-input "<report.md>"`를 실행한다. 보고서는 비어 있지 않은 별도 Markdown이어야 한다. clean인데 생성물이 바뀌었으면 명령이 거부한다. 검토 후 새 생성 작업이 있었다면 새 파일 목록으로 arm한다. 같은 내용 재등록은 no-op이다.
 
 ## 안전과 한계
+
+스냅샷 저장 등 검토 준비가 실패하면 자동 재시도하지 않는다. 디스크·권한 등 원인을 해소한 뒤 `node "<suite>/scripts/post-generate.cjs" retry "<session_id>"`로 새 시도를 등록한다. 이전 사본은 덮어쓰거나 삭제하지 않으며 다음 Stop에서 한 번만 재검토를 요청한다. 진행 중인 검토나 승인 대기를 retry로 초기화할 수 없다.
 
 세션별 상태·변경 전 사본은 작업 폴더의 `.skillmerge-review/`에 보존한다. 사본에는 생성물 원문이 있으므로 Git·외부 공유 대상에서 제외한다. `status`의 snapshots 경로에서 필요한 파일만 수동 복원할 수 있다. 자동 삭제하지 않는다.
 

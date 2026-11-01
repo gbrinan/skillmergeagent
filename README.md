@@ -4,7 +4,7 @@
 
 **팀원들이 각자 만든 스킬을 파악하고, 워크플로우를 인터뷰로 확정하고, 비슷한 것은 통폐합하고, 합쳐지지 않는 것은 하나의 워크플로우로 엮는다. 그 결과의 구조와 이름 계약은 기계가 판정하고, 실제로 도는지는 사람이 두 번 확인한다.**
 
-어느 회사, 어느 팀, 어느 에이전트(Claude Code, Codex, OpenCode, Cursor 등)에서든 같은 방식으로 쓴다. 회사 고유의 것(디자인 토큰, 교육 세션 이름, 상류 도구의 파일 형식)은 이 저장소에 두지 않는다. 그런 것은 이 엔진을 쓰는 **프로필 저장소**(예: [Jcurve_SKI](https://github.com/gbrinan/Jcurve_SKI))에 둔다.
+어느 회사, 어느 팀, 어느 에이전트(Claude Code, Codex, OpenCode, Cursor 등)에서든 같은 방식으로 쓴다. 회사 고유의 것(디자인 토큰, 교육 세션 이름, 상류 도구의 파일 형식)은 이 저장소에 두지 않는다. 그런 것은 이 엔진을 쓰는 **프로필 저장소**에 둔다.
 
 설계 철학은 [paperthin](https://github.com/LilMGenius/paperthin)의 "더하지 말고 덜어낸다", 과정 기록은 [file-based planning workflow](https://github.com/ahastudio/til/blob/main/ai/file-based-planning-workflow.md)의 세 파일 패턴이다.
 
@@ -187,4 +187,4 @@ skillmergeagent/
 
 - 철학과 스킬 해부: [paperthin](https://github.com/LilMGenius/paperthin) (MIT): `readchk`·`aim`·`ssotize`·`sip`의 반사를 이 도메인으로 옮겼다. 포크가 아니라 같은 규약을 따르는 별도 스위트다.
 - 과정 기록: [ahastudio/til, File-based Planning Workflow](https://github.com/ahastudio/til/blob/main/ai/file-based-planning-workflow.md): 세 파일 패턴을 `planfiles`와 `templates/`로 옮겼다.
-- 첫 인스턴스: [Jcurve_SKI](https://github.com/gbrinan/Jcurve_SKI): 한 회사의 에이전트 제작 교육에서 실측으로 다듬어진 인터뷰 프롬프트·계약 게이트·점검기가 이 엔진의 원형이다. 회사 고유 부분은 그 저장소에 남고, 일반화된 부분이 여기로 왔다.
+- 첫 인스턴스: 한 회사의 에이전트 제작 교육에서 실측으로 다듬어진 인터뷰 프롬프트·계약 게이트·점검기가 이 엔진의 원형이다. 회사 고유 부분은 비공개 저장소에 남고, 일반화된 부분이 여기로 왔다.

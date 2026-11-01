@@ -1,5 +1,7 @@
 # skillmergeagent: 흩어진 스킬을 하나의 워크플로우로
 
+![skillmergeagent](.github/banner.jpg)
+
 **팀원들이 각자 만든 스킬을 파악하고, 워크플로우를 인터뷰로 확정하고, 비슷한 것은 통폐합하고, 합쳐지지 않는 것은 하나의 워크플로우로 엮는다. 그 결과의 구조와 이름 계약은 기계가 판정하고, 실제로 도는지는 사람이 두 번 확인한다.**
 
 어느 회사, 어느 팀, 어느 에이전트(Claude Code, Codex, OpenCode, Cursor 등)에서든 같은 방식으로 쓴다. 회사 고유의 것(디자인 토큰, 교육 세션 이름, 상류 도구의 파일 형식)은 이 저장소에 두지 않는다. 그런 것은 이 엔진을 쓰는 **프로필 저장소**(예: [Jcurve_SKI](https://github.com/gbrinan/Jcurve_SKI))에 둔다.
